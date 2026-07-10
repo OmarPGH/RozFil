@@ -31,7 +31,7 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-
+console.log(arrUtils.fbVal(myArray, 'Mohamed'))
 
 console.log('End');
 

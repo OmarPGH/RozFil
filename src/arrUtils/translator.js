@@ -1,4 +1,4 @@
-import { invalid } from './invalid.js';
+import { invalid } from '../invalid.js';
 
 function translator(input = invalid) {
 
