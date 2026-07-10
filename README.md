@@ -217,7 +217,7 @@ import { arrUtils } from './src/index.js';
 
 const mixed = [1, 'hello', 2, 'world', 3, true, 'test'];
 const strings = arrUtils.fbType(mixed, 'string');
-// Result: ['hello', 'world', 'test']
+// Result: [1, 2, 3, true]
 ```
 
 ### Remove Null and Undefined
