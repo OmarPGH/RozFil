@@ -1,5 +1,5 @@
 # 🎯 RozFil
-### ⚡ Advanced JavaScript Filter Library for Arrays & Objects
+### ⚡ Intelligent JavaScript Utility Library for Arrays & Objects
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 ![Language](https://img.shields.io/badge/language-JavaScript%20ES%20Module-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/status-Work%20In%20Progress-orange?style=flat-square)
 
-**🚀 High-performance filtering with zero compromises on speed or memory**
+**🚀 Smart, precise type-detection and exclusion filtering for data cleaning**
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [API Reference](#-api-reference) • [Performance](#-performance--optimization)
 
@@ -18,43 +18,40 @@
 
 ## 📌 Overview
 
-**RozFil** is a lightweight, blazingly-fast JavaScript library built for intelligent filtering of large arrays and objects. Designed with performance-critical applications in mind, it leverages **functional programming principles** to deliver memory-efficient solutions without the overhead of traditional OOP patterns.
+**RozFil** is a lightweight, precise JavaScript utility library built to solve one of JS's biggest headaches: data cleaning and type identification. Instead of writing messy, repetitive conditional loops, RozFil allows you to seamlessly **exclude and filter out** unwanted data types, exact values, or even stringified data structures from your collections.
 
-Whether you're handling massive datasets or need precise type-safe filtering, RozFil provides the tools you need with minimal footprint.
+Whether you're handling dirty datasets or need strict type-safe exclusion, RozFil provides predictable tools without unnecessary library overhead.
 
 ---
 
 ## ⭐ Features
 
 ### 🏗️ **Functional Architecture**
-- Pure, side-effect-free functions using return-based logic
-- Zero constructor overhead or complex OOP abstraction
+- Pure, predictable logic with zero global state side-effects
+- Lightweight footprint with zero third-party dependencies
 - Clean, composable API design
 
-### 💾 **Memory Optimized**
-- Built from the ground up to prevent memory leaks
-- Smart allocation strategies for large-scale datasets
-- Minimal garbage collection pressure
-- Zero unnecessary array allocations
+### 🔍 **Smart Type Detection**
+- Fixes traditional `typeof` limitations (correctly distinguishes between Arrays and Objects)
+- Reliable handling of JS edge cases (NaN, Infinity, etc.)
+- Predictable behavior across different native data types
+
+### 🧩 **Stringified Data Parsing**
+- Intelligent detection for text-wrapped structures
+- Able to detect `'[]'`, `'{}'`, or `'1'` as their actual semantic types
 
 ### 📦 **Modular Design**
 - Native ES Modules (`import`/`export`)
 - Clean, organized file structure with intelligent indexing
-- Tree-shakeable exports for minimal bundle size
 - Easy to integrate into modern JavaScript projects
 
-### 🔒 **Strict Type Safety**
-- Robust type detection for arrays and objects
-- Reliable handling of edge cases (NaN, Infinity, Symbols, BigInt, etc.)
-- Predictable behavior across different data types
-
-### 🎯 **Smart Filtering**
-- Multiple filtering strategies for different use cases
-- `fbType` - Filter by type detection
-- `fbExType` - Filter by exact type matching
-- `fbTypeSmart` - Intelligent filtering with advanced logic
-- `fbVal` - Filter by exact value matching
-- `fbIncludeVal` - Filter by value inclusion
+### 🎯 **Smart Exclusion Filtering (arrUtils)**
+- Multiple exclusion strategies for arrays
+- `arrUtils.fbType` - Exclude by basic JS type
+- `arrUtils.fbExType` - Exclude by exact type matching (differentiates NaN from numbers)
+- `arrUtils.fbTypeSmart` - Intelligent exclusion including stringified types
+- `arrUtils.fbVal` - Exclude by exact value
+- `arrUtils.fbIncludeVal` - Exclude by value inclusion
 
 ---
 
@@ -80,86 +77,50 @@ npm install rozfil
 
 ## 🚀 Usage
 
-### Basic Array Filtering
+> 💡 **IMPORTANT NOTE:** RozFil filters operate on an **exclusion** basis. The types or values you pass to the functions are the ones that will be **removed** from your array.
+
+### Basic Array Filtering (arrUtils)
 
 ```javascript
 import { arrUtils } from './src/index.js';
 
 const data = [
-  '', 
-  '   ', 
-  Infinity, 
-  'Infinity', 
-  Symbol('id'), 
-  9999999999999n, 
-  '9999999999999n', 
   1, 
-  '2', 
-  true, 
-  'true', 
-  false, 
-  'false', 
-  undefined, 
-  'undefined', 
+  'hello', 
   NaN, 
-  'NaN', 
-  null, 
-  'null', 
-  'Mohamed'
+  [], 
+  '[]', 
+  '123', 
+  undefined, 
+  null
 ];
 
-// Filter using smart type detection
-const filtered = arrUtils.fbTypeSmart(
-  data, 
-  undefined, 
-  null, 
-  NaN, 
-  'arr', 
-  'str', 
-  'str'
-);
+// 1. Standard exclusion (Removes basic JS types)
+const noNumbers = arrUtils.fbType(data, 'number');
+// Result: ['hello', NaN, [], '[]', '123', undefined, null] (Note: NaN is technically a 'number' in JS!)
 
-console.log(filtered); // ✨ Filtered results
+// 2. Exact type exclusion (Differentiates NaN from numbers, Arrays from Objects)
+const strictClean = arrUtils.fbExType(data, 'NaN', 'arr');
+// Result: [1, 'hello', '[]', '123', undefined, null]
+
+// 3. Smart type exclusion (Detects types inside strings!)
+const smartClean = arrUtils.fbTypeSmart(data, 'arr', 'numStr');
+// Result: [1, 'hello', NaN, undefined, null] (Removed both native arrays and '[]' / '123' strings)
 ```
-
-### Available Filter Methods
-
-#### `fbType(array, ...types)`
-Filter array by type - flexible type matching
-
-#### `fbExType(array, ...types)`
-Filter array by exact type - strict matching only
-
-#### `fbTypeSmart(array, ...types)`
-Intelligent filtering with advanced logic for complex scenarios
-
-#### `fbVal(array, value)`
-Filter array by value matching
-
-#### `fbIncludeVal(array, value)`
-Filter array by value inclusion
 
 ---
 
 ## 📊 Performance & Optimization
 
-RozFil is engineered from the ground up for performance:
+RozFil is engineered to be lightweight and reliable for everyday data manipulation:
 
 | Feature | Benefit |
-|---------|---------|
-| **In-place Tracking** | Minimizes heap allocations during sequential filtering passes |
-| **Lazy Evaluation** | Processes data on-demand without unnecessary intermediate arrays |
-| **GC Friendly** | Ensures cached references are properly cleared immediately after execution |
-| **Zero Overhead** | No wrapper objects or unnecessary abstractions |
-| **Optimized Loops** | Tight, efficient iteration patterns for maximum throughput |
-
-### Real-World Performance
-```javascript
-// Processing 5M+ items efficiently
-let largeArray = [...]; // millions of items
-let result = arrUtils.fbTypeSmart(largeArray, undefined, null, NaN);
-// ⚡ Completes in milliseconds with minimal memory overhead
-```
+| :--- | :--- |
+| **Native Execution** | Relies on standard, optimized JavaScript loops |
+| **Predictable Flow** | Processes data directly without complex abstractions |
+| **Zero Dependencies** | Ensures your node_modules stays clean and secure |
+| **Lightweight** | No heavy wrapper objects or unnecessary overhead |
+| **Strict Type Safety** | Prevents runtime errors caused by unexpected data types |
 
 ---
 
@@ -169,99 +130,70 @@ let result = arrUtils.fbTypeSmart(largeArray, undefined, null, NaN);
 RozFil/
 ├── src/
 │   ├── index.js                    # Main entry point
-│   ├── arrUtils/
-│   │   ├── index.js               # Array utilities export
-│   │   ├── filterByType.js        # Type-based filtering
-│   │   ├── filterByExactType.js   # Strict type filtering
-│   │   ├── filterByTypeSmart.js   # Advanced filtering logic
-│   │   ├── filterByValue.js       # Value-based filtering
-│   │   ├── filterByIncludeValue.js # Inclusion filtering
+│   ├── arrUtils/                   # Array utilities module
+│   │   ├── index.js               
+│   │   ├── filterByType.js        # Basic type-exclusion
+│   │   ├── filterByExactType.js   # Strict type exclusion
+│   │   ├── filterByTypeSmart.js   # Advanced exclusion (stringified types)
+│   │   ├── filterByValue.js       # Exact value exclusion
+│   │   ├── filterByIncludeValue.js # Value inclusion exclusion
 │   │   ├── translator.js          # Type translation utilities
 │   │   └── regexBook.js           # Regex patterns library
-│   └── objUtils/
-│       ├── index.js               # Object utilities export
-│       ├── filterByType.js        # Object type filtering
-│       ├── translator.js          # Type translation
-│       └── regexBook.js           # Regex patterns
-├── package.json                    # Project metadata
-├── test.js                         # Performance testing suite
-└── README.md                       # This file
+│   └── objUtils/                   # Object utilities module (WIP)
+│       ├── index.js               
+│       ├── filterByType.js        
+│       ├── translator.js          
+│       └── regexBook.js           
+├── package.json                    
+├── test.js                         
+└── README.md                       
 ```
 
 ---
 
 ## 🔧 API Reference
 
-### Array Utils (`arrUtils`)
+### Array Utils (arrUtils)
 
 | Method | Description | Signature |
-|--------|-------------|-----------|
-| `fbType()` | Filter by type | `fbType(array, ...types)` |
-| `fbExType()` | Filter by exact type | `fbExType(array, ...types)` |
-| `fbTypeSmart()` | Smart filtering | `fbTypeSmart(array, ...types)` |
-| `fbVal()` | Filter by value | `fbVal(array, value)` |
-| `fbIncludeVal()` | Filter by inclusion | `fbIncludeVal(array, value)` |
-| `translate()` | Type translation | `translate(value)` |
-| `reBook` | Regex patterns | `reBook.{pattern}` |
+| :--- | :--- | :--- |
+| arrUtils.fbType() | Excludes items matching basic JS types | arrUtils.fbType(array, ...types) |
+| arrUtils.fbExType() | Excludes items matching exact types | arrUtils.fbExType(array, ...types) |
+| arrUtils.fbTypeSmart() | Excludes items using smart string detection | arrUtils.fbTypeSmart(array, ...types) |
+| arrUtils.fbVal() | Excludes matching exact values | arrUtils.fbVal(array, value) |
+| arrUtils.fbIncludeVal() | Excludes items containing the value | arrUtils.fbIncludeVal(array, value) |
+| arrUtils.translate() | Type translation utility | arrUtils.translate(value) |
+| arrUtils.reBook | Regex patterns dictionary | arrUtils.reBook.{pattern} |
 
-### Object Utils (`objUtils`)
+### Object Utils (objUtils)
+
 🚧 **Currently In Development**
-
----
-
-## 📝 Examples
-
-### Filter Strings from Mixed Array
-```javascript
-import { arrUtils } from './src/index.js';
-
-const mixed = [1, 'hello', 2, 'world', 3, true, 'test'];
-const strings = arrUtils.fbType(mixed, 'string');
-// Result: [1, 2, 3, true]
-```
-
-### Remove Null and Undefined
-```javascript
-const data = [1, null, 2, undefined, 3, 'text', null];
-const clean = arrUtils.fbTypeSmart(data, null, undefined);
-// Result: [1, 2, 3, 'text']
-```
-
-### Handle Edge Cases
-```javascript
-const complex = [NaN, Infinity, -Infinity, 'text', 123, null];
-const numeric = arrUtils.fbType(complex, 'number');
-// Intelligent handling of NaN and Infinity
-```
 
 ---
 
 ## 🎓 Use Cases
 
-- ✅ **Data Cleaning**: Remove invalid or unwanted entries from datasets
-- ✅ **Type Safety**: Ensure only specific types in your collections
-- ✅ **Performance**: Process millions of items efficiently
-- ✅ **Data Transformation**: Prepare data for analysis or processing
-- ✅ **Testing**: Validate and filter test data
-- ✅ **Real-time Processing**: Handle streaming data with minimal overhead
+- ✅ **Data Cleaning**: Remove invalid, unwanted, or corrupted entries from datasets.
+- ✅ **Type Safety**: Ensure only clean, specific types remain in your collections.
+- ✅ **API Response Handling**: Strip out null, undefined, or stringified empty objects received from backend APIs.
+- ✅ **Form Validation**: Clean up mixed user inputs effortlessly.
 
 ---
 
 ## 📌 Current Status
 
 | Component | Status |
-|-----------|--------|
-| Array Utils | ✅ **Ready** |
-| Object Utils | 🚧 **In Development** |
+| :--- | :--- |
+| Array Utils (arrUtils) | ✅ **Ready** |
+| Object Utils (objUtils) | 🚧 **In Development** |
 | Documentation | ✅ **Complete** |
 | Tests | 🚧 **In Progress** |
-| Performance Benchmarks | 📊 **Planned** |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Whether you have ideas for optimization, new features, or bug fixes:
+Contributions are welcome! Whether you have ideas for new exact types, optimizing the regex books, or fixing bugs:
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -285,15 +217,15 @@ This project is licensed under the **Apache License 2.0** - see the LICENSE file
 
 ## 🙏 Acknowledgments
 
-- Inspired by functional programming best practices
-- Built with performance and memory efficiency as core principles
-- Community feedback and contributions
+- Built to make JavaScript type-checking actually make sense.
+- Community feedback and contributions.
 
 ---
 
 ## 📞 Support & Feedback
 
-Found a bug? Have a suggestion? 
+Found a bug? Have a suggestion for a new smart type?
+
 - Open an issue on GitHub
 - Reach out with your feedback
 
