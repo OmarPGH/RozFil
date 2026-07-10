@@ -1,0 +1,13 @@
+{
+  "name": "RozFil",
+  "version": "0.0.1-beta.1",
+  "description": "A JS filter library for arrays and objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["filter", "array", "object", "smart-filter", "perforamnce"],
+  "author": "Omar Gamal",
+  "license": "Apache 2.0",
+  "type": "module"
+}
