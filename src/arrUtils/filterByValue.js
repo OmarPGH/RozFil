@@ -6,9 +6,19 @@ function filterByValue(cs, arr, ...input) {
 
 		ele = String(ele);
 		currentInput = String(currentInput);
+		
+		if (cs === false) {
 
-		if (currentInput === ele) {
-			return true;
+			if (currentInput.toLowerCase() === ele.toLowerCase()) {
+				return true;
+			}
+
+		} else if (cs === true) {
+
+			if (currentInput === ele) {
+				return true;
+			}
+
 		}
 
 		return false;

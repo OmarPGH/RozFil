@@ -3,7 +3,7 @@ import { invalid } from '../invalid.js';
 
 function coreFilterEngine(filterFun, depth, obj, input, allowed) {
 
-	if (obj === undefined) throw new Error('No object Input');
+	if (typeof obj === 'object' && !Array.isArray(arr) && obj !== null) throw new Error('No object input, or input isn\'t object');
 
 	let maxDepth = 1;
 	let minDepth = 1;

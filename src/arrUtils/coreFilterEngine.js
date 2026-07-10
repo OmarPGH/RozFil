@@ -3,7 +3,7 @@ import { invalid } from '../invalid.js';
 
 function coreFilterEngine(filterFun, arr, input, allowed) {
 
-	if (arr === undefined) throw new Error('No Array Input');
+	if (!Array.isArray(arr)) throw new Error('No array input, or input isn\'t array');
 
 	input = [...new Set(input)];
 
