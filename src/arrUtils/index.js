@@ -1,5 +1,5 @@
 export { translator as translate } from './translator.js';
-import { invalid } from '../invalid.js';
+export { invalid } from '../invalid.js';
 export { filterByType as fbType } from './filterByType.js';
 export { filterByExactType as fbExType } from './filterByExactType.js';
 export { filterByTypeSmart as fbTypeSmart } from './filterByTypeSmart.js';

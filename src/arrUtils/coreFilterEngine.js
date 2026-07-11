@@ -3,7 +3,9 @@ import { invalid } from '../invalid.js';
 
 function coreFilterEngine(filterFun, arr, input, allowed) {
 
-	if (!Array.isArray(arr)) throw new Error('No array input, or input isn\'t array');
+	arr = structuredClone(arr);
+
+	if (!Array.isArray(arr)) throw new Error('this isn\'t array');
 
 	input = [...new Set(input)];
 
