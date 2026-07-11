@@ -1,15 +1,10 @@
-import { translator as translate } from './translator.js';
 import { invalid } from '../invalid.js';
 
-function coreFilterEngine(filterFun, depth, obj, input, allowed) {
+function coreFilterEngine(filterFun, obj, input, allowed) {
 
-	if (typeof obj === 'object' && !Array.isArray(arr) && obj !== null) throw new Error('No object input, or input isn\'t object');
+	obj = structuredClone(obj);
 
-	let maxDepth = 1;
-	let minDepth = 1;
-	
-	if (depth < minDepth) return obj;
-	if (depth > maxDepth) throw new Error(`depth is more than ${maxDepth}`);
+	if (typeof obj !== 'object' || Array.isArray(obj) || obj === null) throw new Error('this isn\'t object');
 
 	input = [...new Set(input)];
 
@@ -37,17 +32,24 @@ function coreFilterEngine(filterFun, depth, obj, input, allowed) {
 	for (let i = 0; i < inputLen; i++) {
 	    let currentInput = input[i];
 
+	    //---------------
+
+	    // This part causes a bottleneck because it loops on the object
+	    // even when it's unnecessary in certain cases. (WIP / Under development)
+
 	    for (let j = 0; j < objLen; j++) {
 	        let key = objKeys[j];
-	        let value = obj[j];
+	        let value = obj[key];
 
-	        if (filterFunLocal(value, currentInput) === false) {
+	        if (filterFunLocal(key, value, currentInput) === false) {
 	        	continue;
 	        }
 
-	      	
+	      	delete obj[key];
 
 	    }
+
+	    //---------------
 	    
 	}
 
