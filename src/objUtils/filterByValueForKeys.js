@@ -2,6 +2,7 @@ import { coreFilterEngine } from './coreFilterEngine.js';
 
 function filterByValueForKeys(cs, obj, ...input) {
 	let allowed = undefined;
+	let iterate = cs !== true;
 	function filterFun(key, value, currentInput){
 
 		key = String(key);
@@ -24,7 +25,7 @@ function filterByValueForKeys(cs, obj, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, obj, input, allowed);
+	return coreFilterEngine(filterFun, obj, input, allowed, iterate);
 }
 
 export { filterByValueForKeys }
