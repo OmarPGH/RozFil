@@ -24,7 +24,10 @@ function filterByValueForKeys(cs, obj, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, obj, input, allowed);
+
+	let iterate = !cs;
+
+	return coreFilterEngine(filterFun, obj, input, allowed, iterate);
 }
 
 export { filterByValueForKeys }

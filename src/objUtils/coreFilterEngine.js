@@ -1,6 +1,6 @@
 import { invalid } from '../invalid.js';
 
-function coreFilterEngine(filterFun, obj, input, allowed) {
+function coreFilterEngine(filterFun, obj, input, allowed, iterate = true) {
 
 	obj = structuredClone(obj);
 
@@ -34,19 +34,21 @@ function coreFilterEngine(filterFun, obj, input, allowed) {
 
 	    //---------------
 
-	    // This part causes a bottleneck because it loops on the object
-	    // even when it's unnecessary in certain cases. (WIP / Under development)
+	    if (iterate) {
+	        for (let j = 0; j < objLen; j++) {
+	            let key = objKeys[j];
+	            let value = obj[key];
 
-	    for (let j = 0; j < objLen; j++) {
-	        let key = objKeys[j];
-	        let value = obj[key];
+	            if (filterFunLocal(key, value, currentInput) === false) {
+	            	continue;
+	            }
 
-	        if (filterFunLocal(key, value, currentInput) === false) {
-	        	continue;
+	          	delete obj[key];
 	        }
-
-	      	delete obj[key];
-
+	    } else {
+	        if (filterFunLocal(currentInput, obj[currentInput], currentInput) !== false) {
+	            delete obj[currentInput];
+	        }
 	    }
 
 	    //---------------
