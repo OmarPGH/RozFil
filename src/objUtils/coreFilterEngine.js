@@ -1,6 +1,6 @@
 import { invalid } from '../invalid.js';
 
-function coreFilterEngine(filterFun, obj, input, allowed) {
+function coreFilterEngine(filterFun, obj, input, allowed, iterate = true) {
 
 	obj = structuredClone(obj);
 
@@ -27,6 +27,14 @@ function coreFilterEngine(filterFun, obj, input, allowed) {
 
 	if (objLen < 1) throw new Error('object length is less than 1');
 
+	if (!iterate){
+		for (let i = 0; i < inputLen; i++) {
+			delete obj[input[i]];
+		}
+		
+		return obj;
+	}
+
 	const filterFunLocal = filterFun;
 
 	for (let i = 0; i < inputLen; i++) {
@@ -52,8 +60,6 @@ function coreFilterEngine(filterFun, obj, input, allowed) {
 	    //---------------
 	    
 	}
-
-	obj.length = objLen; 
 
 	return obj;
 
