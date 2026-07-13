@@ -95,17 +95,19 @@ const data = [
   null
 ];
 
+// params : [inPlace, arr, ...input]
+
 // 1. Standard exclusion (Removes basic JS types)
-const noNumbers = arrUtils.fbType(data, 'number');
-// Result: ['hello', NaN, [], '[]', '123', undefined, null] (Note: NaN is technically a 'number' in JS!)
+const noNumbers = arrUtils.fbType(false, data, 'number'); (Note: false to clone the array instead of edit it)
+// Result: ['hello', [], '[]', '123', undefined, null] (Note: NaN is technically a 'number' in JS!)
 
 // 2. Exact type exclusion (Differentiates NaN from numbers, Arrays from Objects)
-const strictClean = arrUtils.fbExType(data, 'NaN', 'arr');
+const strictClean = arrUtils.fbExType(false, data, 'NaN', 'arr');
 // Result: [1, 'hello', '[]', '123', undefined, null]
 
 // 3. Smart type exclusion (Detects types inside strings!)
-const smartClean = arrUtils.fbTypeSmart(data, 'arr', 'numStr');
-// Result: [1, 'hello', NaN, undefined, null] (Removed both native arrays and '[]' / '123' strings)
+const smartClean = arrUtils.fbTypeSmart(false, data, 'arr', 'num');
+// Result: ['hello', NaN, undefined, null] (Removed both native arrays / numbers and '[]' / '123' strings)
 ```
 
 ---
