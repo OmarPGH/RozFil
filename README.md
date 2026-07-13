@@ -4,7 +4,7 @@
 <div align="center">
 
 ![Version](https://img.shields.io/badge/version-0.0.1--beta.1-blue?style=flat-square)
-![License](https://img.shields.io/badge/license-LGPLv3-green?style=flat-square)
+![License](https://img.shields.io/badge/license-LGPL--3.0--only-green?style=flat-square)
 ![Language](https://img.shields.io/badge/language-JavaScript%20ES%20Module-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/status-Work%20In%20Progress-orange?style=flat-square)
 
