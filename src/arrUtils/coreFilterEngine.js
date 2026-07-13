@@ -1,10 +1,18 @@
 import { translator as translate } from './translator.js';
 import { invalid } from '../invalid.js';
 
-function coreFilterEngine(filterFun, arr, input, allowed) {
+function coreFilterEngine(filterFun, inPlace, arr, input, allowed) {
 
-	arr = structuredClone(arr);
+	if (!inPlace) {
+		
+		try {
+			arr = structuredClone(arr);
+		} catch {
+			throw new Error('Your array includes type of data unable to clone like [Symbol(\'Something\')]')
+		}
 
+	}
+	
 	if (!Array.isArray(arr)) throw new Error('this isn\'t array');
 
 	input = [...new Set(input)];

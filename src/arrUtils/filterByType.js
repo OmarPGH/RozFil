@@ -1,6 +1,6 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
-function filterByType(arr, ...input) {
+function filterByType(inPlace, arr, ...input) {
 	let allowed = ['string', 'number', 'boolean', 'function', 'object', 'bigint', 'symbol'];
 	function filterFun(ele, currentInput){
 
@@ -11,7 +11,7 @@ function filterByType(arr, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, arr, input, allowed);
+	return coreFilterEngine(filterFun, inPlace, arr, input, allowed);
 }
 
 export { filterByType };
