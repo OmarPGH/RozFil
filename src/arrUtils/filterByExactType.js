@@ -1,6 +1,6 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
-function filterByExactType(arr, ...input) {
+function filterByExactType(inPlace, arr, ...input) {
 	let allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'date'];
 	function filterFun(ele, currentInput){
 
@@ -72,7 +72,7 @@ function filterByExactType(arr, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, arr, input, allowed);
+	return coreFilterEngine(filterFun, inPlace, arr, input, allowed);
 }
 
 export { filterByExactType };

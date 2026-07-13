@@ -1,6 +1,6 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
-function filterByIncludeValue(cs, arr, ...input) {
+function filterByIncludeValue(inPlace, cs, arr, ...input) {
 	let allowed = undefined;
 	function filterFun(ele, currentInput){
 
@@ -34,7 +34,7 @@ function filterByIncludeValue(cs, arr, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, arr, input, allowed);
+	return coreFilterEngine(filterFun, inPlace, arr, input, allowed);
 }
 
 export { filterByIncludeValue }

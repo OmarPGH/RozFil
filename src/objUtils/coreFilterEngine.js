@@ -1,8 +1,16 @@
 import { invalid } from '../invalid.js';
 
-function coreFilterEngine(filterFun, obj, input, allowed, iterate = true) {
+function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = true) {
 
-	obj = structuredClone(obj);
+	if (!inPlace) {
+		
+		try {
+			obj = structuredClone(obj);
+		} catch {
+			throw new Error('Your object includes type of data unable to clone like [Symbol(\'Something\')]')
+		}
+
+	}
 
 	if (typeof obj !== 'object' || Array.isArray(obj) || obj === null) throw new Error('this isn\'t object');
 
@@ -40,11 +48,6 @@ function coreFilterEngine(filterFun, obj, input, allowed, iterate = true) {
 	for (let i = 0; i < inputLen; i++) {
 	    let currentInput = input[i];
 
-	    //---------------
-
-	    // This part causes a bottleneck because it loops on the object
-	    // even when it's unnecessary in certain cases. (WIP / Under development)
-
 	    for (let j = 0; j < objLen; j++) {
 	        let key = objKeys[j];
 	        let value = obj[key];
@@ -56,8 +59,6 @@ function coreFilterEngine(filterFun, obj, input, allowed, iterate = true) {
 	      	delete obj[key];
 
 	    }
-
-	    //---------------
 	    
 	}
 

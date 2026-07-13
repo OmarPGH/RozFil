@@ -2,11 +2,11 @@ import { objUtils } from '../src/index.js';
 
 let myObject = {};
 
-let keys = ['user', 'skills'];
-let vals = ['Omar', ['JS', 'Node.js']];
+let keys = ['user', 'skills', 'id'];
+let vals = ['Omar', ['JS', 'Node.js'], Symbol('id')];
 
 let keysLen = keys.length;
-let totalKeys = 500;
+let totalKeys = 5000;
 
 for (let i = 1; i <= totalKeys; i++) {
 	let keyIndex = i % keysLen;
@@ -22,7 +22,7 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-console.log(objUtils.fbValfk(false, myObject, 'user_500'))
+console.log(objUtils.fbValfk(false, true, myObject, 'user_4995', 'id_4997'))
 
 console.log('End');
 
