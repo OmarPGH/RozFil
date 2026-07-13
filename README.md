@@ -205,7 +205,7 @@ Contributions are welcome! Whether you have ideas for new exact types, optimizin
 
 ## 📄 License
 
-This project is licensed under the **LGPLv3 License** - see the LICENSE file for details.
+This project is licensed under the **GNU Lesser General Public License v3.0 only / LGPL-3.0-only License** - see the LICENSE file for details.
 
 ---
 
