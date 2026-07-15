@@ -1,6 +1,7 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
 function filterByValue(inPlace, cs, arr, ...input) {
+	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
 	let allowed = undefined;
 	function filterFun(ele, currentInput){
 

@@ -1,6 +1,7 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
 function filterByExactType(inPlace, arr, ...input) {
+	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
 	let allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'date'];
 	function filterFun(ele, currentInput){
 

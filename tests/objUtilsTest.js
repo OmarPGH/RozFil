@@ -2,8 +2,8 @@ import { objUtils } from '../src/index.js';
 
 let myObject = {};
 
-let keys = ['user', 'skills', 'id'];
-let vals = ['Omar', ['JS', 'Node.js'], Symbol('id')];
+let keys = ['user', 'skills', 'id', 'area'];
+let vals = ['Omar', ['JS', 'Node.js'], Symbol('id'), {country: 'egypt', city: 'Alex'}];
 
 let keysLen = keys.length;
 let totalKeys = 5000;
@@ -22,7 +22,8 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-console.log(objUtils.fbValfk(false, true, myObject, 'user_4995', 'id_4997'))
+console.log(objUtils.fbIncludeValfv(true, true, myObject, 'Omar'))
+// console.log(objUtils.fbIncludeValfv(true, true, myObject, 'egypt'))
 
 console.log('End');
 
