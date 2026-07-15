@@ -2,6 +2,7 @@ import { coreFilterEngine } from './coreFilterEngine.js';
 import * as reBook from './regexBook.js';
 
 function filterByTypeSmart(inPlace, arr, ...input) {
+	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
 	let allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emptyStringOrWithSpaces', 'emptyArray', 'emptyObject', 'date'];
 	function filterFun(ele, currentInput){
 		

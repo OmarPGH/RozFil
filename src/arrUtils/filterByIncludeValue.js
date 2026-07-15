@@ -1,9 +1,12 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
 function filterByIncludeValue(inPlace, cs, arr, ...input) {
+	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
+	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) param must be boolean');
 	let allowed = undefined;
 	function filterFun(ele, currentInput){
 
+		// const isObject = !(typeof ele !== 'object' || Array.isArray(ele) || ele === null);
 		const isString = typeof ele === 'string';
     	const isArray = Array.isArray(ele);
 
@@ -19,14 +22,20 @@ function filterByIncludeValue(inPlace, cs, arr, ...input) {
 
 			if (isArray) {
 				for (let i = 0; i < ele.length; i++) {
-					if (typeof ele[i] === 'string' && ele[i].toLowerCase() === currentInput.toLowerCase()) return true;
+					if (ele[i] === currentInput || typeof ele[i] === 'string' && ele[i].toLowerCase() === currentInput.toLowerCase()) return true;
 				}
 			}
 
 		} else if (cs === true) {
 
-			if (ele.includes(currentInput)) {
-				return true;
+			// if (isObject) {
+ 
+			// }
+
+			if (isString || isArray) {
+				if (ele.includes(currentInput)) {
+					return true;
+				}
 			}
 
 		}

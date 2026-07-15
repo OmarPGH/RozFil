@@ -2,16 +2,6 @@ import { invalid } from '../invalid.js';
 
 function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = true) {
 
-	if (!inPlace) {
-		
-		try {
-			obj = structuredClone(obj);
-		} catch {
-			throw new Error('Your object includes type of data unable to clone like [Symbol(\'Something\')]')
-		}
-
-	}
-
 	if (typeof obj !== 'object' || Array.isArray(obj) || obj === null) throw new Error('this isn\'t object');
 
 	input = [...new Set(input)];
@@ -33,7 +23,17 @@ function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = tru
 	let objKeys = Object.keys(obj);
 	let objLen = objKeys.length;
 
-	if (objLen < 1) throw new Error('object length is less than 1');
+	if (objLen < 1) throw new Error('Array length is less than 1');
+
+	if (!inPlace) {
+		
+		try {
+			obj = structuredClone(obj);
+		} catch {
+			throw new Error('Your object includes type of data unable to clone like [Symbol(\'Something\')]')
+		}
+
+	}
 
 	if (!iterate){
 		for (let i = 0; i < inputLen; i++) {

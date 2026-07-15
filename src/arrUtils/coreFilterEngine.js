@@ -3,16 +3,6 @@ import { invalid } from '../invalid.js';
 
 function coreFilterEngine(filterFun, inPlace, arr, input, allowed) {
 
-	if (!inPlace) {
-		
-		try {
-			arr = structuredClone(arr);
-		} catch {
-			throw new Error('Your array includes type of data unable to clone like [Symbol(\'Something\')]')
-		}
-
-	}
-	
 	if (!Array.isArray(arr)) throw new Error('this isn\'t array');
 
 	input = [...new Set(input)];
@@ -34,6 +24,16 @@ function coreFilterEngine(filterFun, inPlace, arr, input, allowed) {
 	let arrLen = arr.length;
 
 	if (arrLen < 1) throw new Error('Array length is less than 1');
+	
+	if (!inPlace) {
+		
+		try {
+			arr = structuredClone(arr);
+		} catch {
+			throw new Error('Your array includes type of data unable to clone like [Symbol(\'Something\')]')
+		}
+
+	}
 
 	const filterFunLocal = filterFun;
 
