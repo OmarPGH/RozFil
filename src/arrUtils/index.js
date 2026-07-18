@@ -1,4 +1,4 @@
-export { translator as translate } from './translator.js';
+export { translator as translate } from '../translator.js';
 export { invalid } from '../invalid.js';
 export { filterByType as fbType } from './filterByType.js';
 export { filterByExactType as fbExType } from './filterByExactType.js';
