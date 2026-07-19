@@ -1,5 +1,4 @@
-import { translator as translate } from './translator.js';
-import { invalid } from '../invalid.js';
+import { translator as translate, invalid } from '../shared/index.js';
 
 function coreFilterEngine(filterFun, inPlace, arr, input, allowed) {
 
