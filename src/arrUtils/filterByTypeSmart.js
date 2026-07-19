@@ -1,5 +1,5 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
-import * as reBook from './regexBook.js';
+import { reBook } from '../shared/index.js';
 
 function filterByTypeSmart(inPlace, arr, ...input) {
 	let allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emptyStringOrWithSpaces', 'emptyArray', 'emptyObject', 'date'];
