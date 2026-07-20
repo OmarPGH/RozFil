@@ -1,4 +1,4 @@
-import { coreFilterEngine } from './coreFilterEngine.js';
+import { coreFilterEngine } from '../coreFilterEngine.js';
 
 function filterByValueForKeys(inPlace, cs, obj, ...input) {
 	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
