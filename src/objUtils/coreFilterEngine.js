@@ -1,4 +1,4 @@
-import { invalid } from '../invalid.js';
+import { translator as translate, invalid } from '../shared/index.js';
 
 function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = true) {
 
