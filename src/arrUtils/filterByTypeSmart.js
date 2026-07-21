@@ -1,5 +1,5 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
-import * as reBook from './regexBook.js';
+import { reBook } from '../shared/index.js';
 
 function filterByTypeSmart(inPlace, arr, ...input) {
 	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
