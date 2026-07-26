@@ -1,19 +1,26 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
-function filterByIncludeValueForValues(inPlace, cs, obj, ...input) {
-	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
-	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) param must be boolean');
+function filterByIncludeValueForValues(obj, input, options) {
+	const inPlace = options.inPlace;
+	const cs = options.cs;
+	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) option must be boolean');
+	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) option must be boolean');
 	let allowed = undefined;
 	function filterFun(key, value, currentInput){
 
-		// const isObject = !(typeof value !== 'object' || Array.isArray(value) || value === null);
+		const isObject = !(typeof value !== 'object' || Array.isArray(value) || value === null);
+
+    	if (isObject) {
+    		return 'descend';
+    	}
+
 		const isString = typeof value === 'string';
     	const isArray = Array.isArray(value);
 
-		if (!isString && !isArray/* && !isObject*/) {
+		if (!isString && !isArray) {
         	return false;
     	}
-		
+
 		if (cs === false) {
 
 			if (isString) {
@@ -28,10 +35,6 @@ function filterByIncludeValueForValues(inPlace, cs, obj, ...input) {
 
 		} else if (cs === true) {
 
-			// if (isObject) {
- 
-			// }
-
 			if (isString || isArray) {
 				if (value.includes(currentInput)) {
 					return true;
@@ -43,7 +46,7 @@ function filterByIncludeValueForValues(inPlace, cs, obj, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, inPlace, obj, input, allowed);
+	return coreFilterEngine(obj, input, options.inPlace, options.depth, filterFun, allowed);
 }
 
 export { filterByIncludeValueForValues }
