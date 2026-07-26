@@ -1,6 +1,6 @@
 import { translator as translate, invalid } from '../shared/index.js';
 
-function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = true) {
+function coreFilterEngine(obj, input, inPlace, depth, filterFun, allowed, iterate = true) {
 
 	if (typeof obj !== 'object' || Array.isArray(obj) || obj === null) throw new Error('this isn\'t object');
 
@@ -23,7 +23,7 @@ function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = tru
 	let objKeys = Object.keys(obj);
 	let objLen = objKeys.length;
 
-	if (objLen < 1) throw new Error('Array length is less than 1');
+	if (objLen < 1) throw new Error('Object items is less than 1');
 
 	if (!inPlace) {
 		
@@ -45,23 +45,37 @@ function coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate = tru
 
 	const filterFunLocal = filterFun;
 
-	for (let i = 0; i < inputLen; i++) {
-	    let currentInput = input[i];
+	function loopingOnData(obj, iterVar, currentDepth = 1) {
+
+		let objKeys = Object.keys(obj);
+		let objLen = objKeys.length;
+
+	    let currentInput = input[iterVar];
 
 	    for (let j = 0; j < objLen; j++) {
+	        
 	        let key = objKeys[j];
 	        let value = obj[key];
+	        let filterFunResult = filterFunLocal(key, value, currentInput);
 
-	        if (filterFunLocal(key, value, currentInput) === false) {
-	        	continue;
-	        }
-
-	      	delete obj[key];
+	        if (filterFunResult === false) {
+			    continue;
+			} else if (filterFunResult === 'descend' && currentDepth < depth) {
+			    loopingOnData(value, iterVar, currentDepth + 1);
+			} else if (filterFunResult === true) {
+			    delete obj[key];
+			}
 
 	    }
-	    
+    
 	}
 
+	for (let i = 0; i < inputLen; i++) {
+
+		loopingOnData(obj, i);
+
+	}
+	
 	return obj;
 
 }

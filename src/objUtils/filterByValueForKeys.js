@@ -1,15 +1,17 @@
 import { coreFilterEngine } from './coreFilterEngine.js';
 
-function filterByValueForKeys(inPlace, cs, obj, ...input) {
-	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
-	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) param must be boolean');
+function filterByValueForKeys(obj, input, options) {
+	const inPlace = options.inPlace;
+	const cs = options.cs;
+	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) option must be boolean');
+	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) option must be boolean');
 	let allowed = undefined;
 	let iterate = !cs;
 	function filterFun(key, value, currentInput){
 
 		key = String(key);
 		currentInput = String(currentInput);
-		
+
 		if (cs === false) {
 
 			if (currentInput.toLowerCase() === key.toLowerCase()) {
@@ -24,10 +26,16 @@ function filterByValueForKeys(inPlace, cs, obj, ...input) {
 
 		}
 
+		const isObject = !(typeof value !== 'object' || Array.isArray(value) || value === null);
+
+    	if (isObject) {
+    		return 'descend';
+    	}
+
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, inPlace, obj, input, allowed, iterate);
+	return coreFilterEngine(obj, input, options.inPlace, options.depth, filterFun, allowed);
 }
 
 export { filterByValueForKeys }
