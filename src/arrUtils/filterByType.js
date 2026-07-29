@@ -1,7 +1,6 @@
-import { coreFilterEngine } from './coreFilterEngine.js';
+import { filterEngine } from './filterEngine.js';
 
-function filterByType(inPlace, arr, ...input) {
-	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
+function filterByType(arr, input, options) {
 	let allowed = ['string', 'number', 'boolean', 'function', 'object', 'bigint', 'symbol'];
 	function filterFun(ele, currentInput){
 
@@ -12,7 +11,7 @@ function filterByType(inPlace, arr, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, inPlace, arr, input, allowed);
+	return filterEngine(arr, input, options.inPlace, options.depth, filterFun, allowed);
 }
 
 export { filterByType };

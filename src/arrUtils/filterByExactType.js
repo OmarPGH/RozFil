@@ -1,7 +1,6 @@
-import { coreFilterEngine } from './coreFilterEngine.js';
+import { filterEngine } from './filterEngine.js';
 
-function filterByExactType(inPlace, arr, ...input) {
-	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
+function filterByExactType(arr, input, options) {
 	let allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'date'];
 	function filterFun(ele, currentInput){
 
@@ -73,7 +72,7 @@ function filterByExactType(inPlace, arr, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, inPlace, arr, input, allowed);
+	return filterEngine(arr, input, options.inPlace, options.depth, filterFun, allowed);
 }
 
 export { filterByExactType };

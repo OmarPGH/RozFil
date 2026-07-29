@@ -32,7 +32,7 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-console.log(arrUtils.fbIncludeVal(true, false, myBigArray, 'mohamed', 'samya'))
+console.log(arrUtils.fbIncludeVal(myBigArray, ['mohamed', 'samya'], {inPlace: true, cs: false}))
 
 console.log('End');
 

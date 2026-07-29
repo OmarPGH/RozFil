@@ -1,7 +1,7 @@
-import { coreFilterEngine } from './coreFilterEngine.js';
+import { filterEngine } from './filterEngine.js';
 
-function filterByIncludeValue(inPlace, cs, arr, ...input) {
-	if (typeof inPlace !== 'boolean') throw new Error('In place (inPlace) param must be boolean');
+function filterByIncludeValue(arr, input, options) {
+	const cs = options.cs;
 	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) param must be boolean');
 	let allowed = undefined;
 	function filterFun(ele, currentInput){
@@ -43,7 +43,7 @@ function filterByIncludeValue(inPlace, cs, arr, ...input) {
 		return false;
 
 	}
-	return coreFilterEngine(filterFun, inPlace, arr, input, allowed);
+	return filterEngine(arr, input, options.inPlace, options.depth, filterFun, allowed);
 }
 
 export { filterByIncludeValue }
