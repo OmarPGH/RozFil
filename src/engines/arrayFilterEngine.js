@@ -5,12 +5,12 @@ import {
     validateAndTranslateInput, 
     validateDataNotEmpty, 
     cloneData, 
-    processArrayLoopingFilter 
+    processArrayFilter 
 } from '../shared/index.js';
 
-function filterEngine(arr, input, inPlace, depth, filterFun, allowed) {
-
-    validateOptions(inPlace);
+function arrayFilterEngine(arr, input, options, filterFun, allowed) {
+    
+    validateOptions(options.inPlace, options.depth);
     validateDataType(Array.isArray(arr), 'array');
 
     let sanitizedInput = sanitizeInput(input);
@@ -20,9 +20,9 @@ function filterEngine(arr, input, inPlace, depth, filterFun, allowed) {
 
     validateDataNotEmpty(arr.length, 'Array length');
     
-    arr = cloneData(arr, inPlace, 'array', '[Symbol]');
+    arr = cloneData(arr, options.inPlace, 'array', '[Symbol]');
 
-    return processArrayLoopingFilter(arr, sanitizedInput, filterFun);
+    return processArrayFilter(arr, sanitizedInput, options.depth, filterFun);
 }
 
-export { filterEngine };
+export { arrayFilterEngine };

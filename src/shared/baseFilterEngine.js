@@ -62,58 +62,75 @@ function deleteObjectKeysNonIterative(obj, input) {
     return obj;
 }
 
-function processObjectLoopingFilter(obj, input, depth = Infinity, filterFun) {
-    const inputLen = input.length;
+function loopingOnObject(obj, currentInput, filterFun, depth, currentDepth = 1) {
+    
+    let objKeys = Object.keys(obj);
+    let objLen = objKeys.length;
 
-    function loopingOnData(obj, iterVar, currentDepth = 1) {
-        let objKeys = Object.keys(obj);
-        let objLen = objKeys.length;
-        let currentInput = input[iterVar];
+    for (let j = 0; j < objLen; j++) {
+        let key = objKeys[j];
+        let value = obj[key];
+        let filterFunResult = filterFun(key, value, currentInput);
+        if (filterFunResult === false) {
+            continue;
+        } else if (filterFunResult === 'descendInObj' && currentDepth < depth) {
+            loopingOnObject(value, currentInput, filterFun, depth, currentDepth + 1);
+        } else if (filterFunResult === 'descendInArr' && currentDepth < depth) {
+            loopingOnArray(value, currentInput, filterFun, depth, currentDepth + 1);
+        } else if (filterFunResult === true) {
+            delete obj[key];
+        }
+    }
+}
 
-        for (let j = 0; j < objLen; j++) {
-            let key = objKeys[j];
-            let value = obj[key];
-            let filterFunResult = filterFun(key, value, currentInput);
+function loopingOnArray(arr, currentInput, filterFun, depth, currentDepth = 1) {
 
-            if (filterFunResult === false) {
-                continue;
-            } else if (filterFunResult === 'descend' && currentDepth < depth) {
-                loopingOnData(value, iterVar, currentDepth + 1);
-            } else if (filterFunResult === true) {
-                delete obj[key];
+    let arrLen = arr.length;
+    let writeIndex = 0;
+
+    for (let j = 0; j < arrLen; j++) {
+        let ele = arr[j];
+        let filterFunResult = filterFun(undefined, ele, currentInput);
+        if (filterFunResult === false) {
+            arr[writeIndex] = ele;
+            writeIndex++;
+        } else if (filterFunResult === 'descendInArr') {
+            arr[writeIndex] = ele;
+            writeIndex++;
+            if (currentDepth < depth) {
+                loopingOnArray(ele, currentInput, filterFun, depth, currentDepth + 1);
+            }
+        } else if (filterFunResult === 'descendInObj') {
+            arr[writeIndex] = ele;
+            writeIndex++;
+            if (currentDepth < depth) {
+                loopingOnObject(ele, currentInput, filterFun, depth, currentDepth + 1);
             }
         }
     }
 
+    arrLen = writeIndex; 
+    arr.length = arrLen; 
+
+}
+
+function processObjectFilter(obj, input, depth = Infinity, filterFun) {
+    const inputLen = input.length;
+
     for (let i = 0; i < inputLen; i++) {
-        loopingOnData(obj, i);
+        loopingOnObject(obj, input[i], filterFun, depth);
     }
 
     return obj;
 }
 
-function processArrayLoopingFilter(arr, input, filterFun) {
+function processArrayFilter(arr, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
-    let arrLen = arr.length;
 
     for (let i = 0; i < inputLen; i++) {
-        let currentInput = input[i];
-        let writeIndex = 0;
-
-        for (let j = 0; j < arrLen; j++) {
-            let ele = arr[j];
-
-            if (filterFun(ele, currentInput) === false) {
-                arr[writeIndex] = ele;
-                writeIndex++;
-            }
-        }
-
-        arrLen = writeIndex; 
-        if (arrLen === 0) break;
+        loopingOnArray(arr, input[i], filterFun, depth);
     }
 
-    arr.length = arrLen; 
     return arr;
 }
 
@@ -125,6 +142,6 @@ export {
     validateDataNotEmpty,
     cloneData,
     deleteObjectKeysNonIterative,
-    processObjectLoopingFilter,
-    processArrayLoopingFilter
+    processObjectFilter,
+    processArrayFilter
 };

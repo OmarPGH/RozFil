@@ -1,4 +1,4 @@
-import { objUtils } from '../src/index.js';
+import { fbVal, fbType } from '../src/index.js';
 
 let myObject = {
 	user1: { name: 'Omar', country: 'Egypt', city: 'Alex', skills:{one: ['JS', 'Node.js'], two: ['Rust']} },
@@ -17,9 +17,7 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-console.log(objUtils.fbIncludeValfv(myObject, ['c#', 'pHp'], {inPlace: true, cs: false, depth: 3}))
-// console.log(objUtils.fbValfv(myObject, ['German'], {inPlace: true, cs: false, depth: 2}))
-// console.log(objUtils.fbValfk(myObject, ['name'], {inPlace: true, cs: false, depth: 2}))
+console.log(fbVal(myObject, ['C', 'C++', 'C#'], {inPlace: true, cs: false, depth: 5}))
 
 console.log('End');
 

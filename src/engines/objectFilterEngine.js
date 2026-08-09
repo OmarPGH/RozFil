@@ -6,12 +6,12 @@ import {
     validateDataNotEmpty, 
     cloneData, 
     deleteObjectKeysNonIterative, 
-    processObjectLoopingFilter 
+    processObjectFilter 
 } from '../shared/index.js';
 
-function filterEngine(obj, input, inPlace, depth, filterFun, allowed, iterate = true) {
+function objectFilterEngine(obj, input, options, filterFun, allowed, iterate = true) {
     
-    validateOptions(inPlace, depth);
+    validateOptions(options.inPlace, options.depth);
 
     let isObj = typeof obj === 'object' && !Array.isArray(obj) && obj !== null;
     validateDataType(isObj, 'object');
@@ -24,13 +24,13 @@ function filterEngine(obj, input, inPlace, depth, filterFun, allowed, iterate = 
     let objKeys = Object.keys(obj);
     validateDataNotEmpty(objKeys.length, 'Object items');
 
-    obj = cloneData(obj, inPlace, 'object', '[Symbol, Function, etc]');
+    obj = cloneData(obj, options.inPlace, 'object', '[Symbol, Function, etc]');
 
     if (!iterate) {
         return deleteObjectKeysNonIterative(obj, sanitizedInput);
     }
 
-    return processObjectLoopingFilter(obj, sanitizedInput, depth, filterFun);
+    return processObjectFilter(obj, sanitizedInput, options.depth, filterFun);
 }
 
-export { filterEngine };
+export { objectFilterEngine };
