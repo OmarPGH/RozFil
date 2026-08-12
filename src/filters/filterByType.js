@@ -1,4 +1,4 @@
-import { filterEngineRouter, isWalkable, reBook, invalid } from '../shared/index.js';
+import { filterEngineRouter, isWalkable, reBook } from '../shared/index.js';
 
 function filterByType(ele, input, options = {}) {
 
