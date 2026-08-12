@@ -1,7 +1,7 @@
 import { filterEngineRouter, isWalkable } from '../shared/index.js';
 
-function filterByValue(ele, input, options) {
-	const cs = options.cs;
+function filterByValue(ele, input, options = {}) {
+	const cs = options.cs || true;
 	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) param must be boolean');
 	const allowed = undefined;
 	function filterFun(key, value, currentInput){

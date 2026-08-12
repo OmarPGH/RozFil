@@ -12,7 +12,13 @@ function validateOptions(inPlace, depth) {
 }
 
 function sanitizeInput(input) {
-    return [...new Set(input)];
+    if (Array.isArray(input)) {
+        return [...new Set(input)];
+    } else if (typeof input === 'object' && input !== null) {
+        throw new Error("Invalid input: input mustn't be an object");
+    } else {
+        return input;
+    }
 }
 
 function validateAndTranslateInput(input, allowed) {
@@ -28,7 +34,7 @@ function validateAndTranslateInput(input, allowed) {
         }
 
         if (!translatedInput.every(ele => allowed.includes(ele)) || translatedInput.includes(invalid)) {
-            throw new Error(`Type Error, only those allowed : \n ${allowed.join(' - ')}`);
+            throw new Error(`Type Error, only those allowed at the selected rigor : \n [ ${allowed.join(' / ')} ].\n hint: rigor = 1 by default`);
         }
         
         return translatedInput;
@@ -117,8 +123,12 @@ function loopingOnArray(arr, currentInput, filterFun, depth, currentDepth = 1) {
 function processObjectFilter(obj, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
 
-    for (let i = 0; i < inputLen; i++) {
-        loopingOnObject(obj, input[i], filterFun, depth);
+    if (!Array.isArray(input)) {
+        loopingOnObject(arr, input, filterFun, depth);
+    } else {
+        for (let i = 0; i < inputLen; i++) {
+            loopingOnObject(obj, input[i], filterFun, depth);
+        }
     }
 
     return obj;
@@ -127,8 +137,12 @@ function processObjectFilter(obj, input, depth = Infinity, filterFun) {
 function processArrayFilter(arr, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
 
-    for (let i = 0; i < inputLen; i++) {
-        loopingOnArray(arr, input[i], filterFun, depth);
+    if (!Array.isArray(input)) {
+        loopingOnArray(arr, input, filterFun, depth);
+    } else {    
+        for (let i = 0; i < inputLen; i++) {
+            loopingOnArray(arr, input[i], filterFun, depth);
+        }
     }
 
     return arr;
