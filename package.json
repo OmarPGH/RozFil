@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["filter", "array", "object", "smart-filter", "perforamnce"],
+  "keywords": ["RozFil", "filter", "array", "object", "smart-filter", "perforamnce"],
   "author": "Omar Gamal",
   "license": "LGPL-3.0-only",
   "type": "module"
