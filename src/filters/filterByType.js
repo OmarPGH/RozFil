@@ -1,12 +1,19 @@
-import { filterEngineRouter, isWalkable, reBook } from '../shared/index.js';
+import { filterEngineRouter, isWalkable, reBook, invalid } from '../shared/index.js';
 
-function filterByType(ele, input, options) {
-	const rigor = options.rigor;
-	const allowed = ['string', 'number', 'boolean', 'function', 'object', 'bigint', 'symbol'];
+function filterByType(ele, input, options = {}) {
+
+	const rigor = options.rigor || 1;
+	if (rigor < 1 || rigor > 3) throw new Error("Rigor must be 1/2/3")
+	
+	let allowed;
+	
+	if (rigor === 1) {
+		allowed = ['string', 'number', 'boolean', 'function', 'object', 'bigint', 'symbol'];
+	} else if (rigor === 2 || rigor === 3) {
+		allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emptyStringOrWithSpaces', 'emptyObject', 'emptyArray', 'date'];
+	}
+
 	function filterFun(key, value, currentInput){
-		
-		let isWalkableRes = isWalkable(value);
-		if (isWalkableRes) return isWalkableRes;
 
 		const valueType = typeof value;
 		let valueTrim;
@@ -174,6 +181,9 @@ function filterByType(ele, input, options) {
 		} else if (rigor === 3) {
 			if (rigorThree()) return true;
 		}
+
+		let isWalkableRes = isWalkable(value);
+		if (isWalkableRes) return isWalkableRes;
 
 		return false;
 
