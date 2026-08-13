@@ -4,7 +4,7 @@
   "description": "A JS filter library for arrays and objects",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test tests/regressions.test.js"
   },
   "keywords": ["RozFil", "filter", "array", "object", "smart-filter", "perforamnce", "smart"],
   "author": "Omar Gamal",

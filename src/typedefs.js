@@ -96,9 +96,8 @@
  * Options accepted by {@link filterByValue}.
  *
  * @typedef {object} FbValOptions
- * @property {boolean} [cs=true] Case sensitivity for string comparison. Note
- *   that the current implementation applies its default with `||`, so passing
- *   `false` has no effect and matching is always case-sensitive.
+ * @property {boolean} [cs=true] Case sensitivity for string comparison. Set to
+ *   `false` to match regardless of casing.
  * @property {number} [depth=Infinity] Nested traversal depth limit.
  * @property {boolean} [inPlace=false] Mutate the original container instead of
  *   cloning it.

@@ -16,9 +16,16 @@ import { filterEngineRouter, isWalkable } from '../shared/index.js';
  * arrays and objects are walked into up to `options.depth`; containers
  * themselves are never removed, only the leaf values inside them.
  *
+ * Matching is case-sensitive unless `options.cs` is set to `false`.
+ *
  * @example
  * fbVal([1, 2, 3, '2'], [2]);
  * // => [1, 3]   — '2' matches too, comparison is stringified
+ *
+ * @example
+ * // case-insensitive matching
+ * fbVal(['ADMIN', 'guest'], ['admin'], { cs: false });
+ * // => ['guest']
  *
  * @example
  * // nested object, depth-limited
@@ -26,7 +33,9 @@ import { filterEngineRouter, isWalkable } from '../shared/index.js';
  * // => { a: {}, b: { role: 'Admin' } }
  *
  * @param {Container} ele Array or plain object to filter.
- * @param {any[]} input Values to remove. Duplicates are collapsed before use.
+ * @param {any[] | *} input Values to remove — either an array, or a single
+ *   value. Duplicates are collapsed before use. A non-array *object* is
+ *   rejected, since it cannot be told apart from a container.
  * @param {FbValOptions} [options={}] Traversal and comparison settings.
  * @returns {Container} The filtered container — a `structuredClone` of `ele`
  *   by default, or `ele` itself when `options.inPlace` is `true`.
@@ -37,21 +46,21 @@ import { filterEngineRouter, isWalkable } from '../shared/index.js';
  *   holds non-cloneable members such as symbols or functions.
  * @throws {Error} `In place (inPlace) option must be boolean` /
  *   `depth option must be integer or infinity` on malformed options.
- * @throws {ReferenceError} When `ele` is an object and `input` is not an array.
- *   Wrap single values in an array: `['x']`, not `'x'`.
+ * @throws {Error} `Case sensitivity (cs) param must be boolean` when
+ *   `options.cs` is supplied and is not a boolean.
  */
 function filterByValue(ele, input, options = {}) {
 	/**
 	 * Case sensitivity flag for the stringified comparison.
 	 *
-	 * Note: because the default is applied with `||`, a passed `false` falls
-	 * through to `true` — comparison is currently always case-sensitive and
-	 * `{ cs: false }` has no effect, despite the README documenting a `false`
-	 * default. Documented here as the code behaves today.
+	 * Defaulted with `??` rather than `||` so that an explicit `false` survives
+	 * — `false || true` is `true`, which previously made `{ cs: false }`
+	 * unreachable. Nullish coalescing also lets a non-boolean such as `0` reach
+	 * the guard below instead of being silently coerced to `true`.
 	 *
 	 * @type {boolean}
 	 */
-	const cs = options.cs || true;
+	const cs = options.cs ?? true;
 	if (typeof cs !== 'boolean') throw new Error('Case sensitivity (cs) param must be boolean');
 	/**
 	 * `fbVal` matches raw values rather than a fixed vocabulary, so there is
