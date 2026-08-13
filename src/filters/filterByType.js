@@ -1,4 +1,5 @@
 import { filterEngineRouter, isWalkable, reBook } from '../shared/index.js';
+import { isNotValidJSONObjectOrArray } from '../shared/jsonValidator.js';
 
 function filterByType(ele, input, options = {}) {
 
@@ -10,7 +11,7 @@ function filterByType(ele, input, options = {}) {
 	if (rigor === 1) {
 		allowed = ['string', 'number', 'boolean', 'function', 'object', 'bigint', 'symbol'];
 	} else if (rigor === 2 || rigor === 3) {
-		allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emptyStringOrWithSpaces', 'emptyObject', 'emptyArray', 'date'];
+		allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emp[...]
 	}
 
 	function filterFun(key, value, currentInput){
@@ -92,7 +93,7 @@ function filterByType(ele, input, options = {}) {
 
 		function rigorThree() {
 			
-			if (currentInput === 'string' && valueType === 'string' && !reBook.jsonObjArrRe.test(value)) {
+			if (currentInput === 'string' && valueType === 'string' && isNotValidJSONObjectOrArray(value)) {
 				return true;
 			} 
 			
