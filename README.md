@@ -173,6 +173,7 @@ RozFil supports shorthand type aliases for fast and clean filtering:
 RozFil/
 ├── src/
 │   ├── index.js                     # Main entry point
+│   ├── typedefs.js                  # Shared JSDoc type definitions
 │   ├── engines/                     # Filter execution engines
 │   │   ├── index.js
 │   │   ├── arrayFilterEngine.js     # Array processing engine
@@ -191,9 +192,30 @@ RozFil/
 ├── tests/                           # Test scripts
 │   ├── arrUtilsTest.js
 │   └── objUtilsTest.js
+├── jsconfig.json                    # Editor IntelliSense configuration
 ├── package.json
 ├── LICENSE
 └── README.md
+```
+
+---
+
+## Editor Support
+
+Every module carries JSDoc annotations, so hover tooltips, parameter hints and
+auto-completion work out of the box in VS Code — no build step and no
+TypeScript migration required. Shared object shapes (`FbTypeOptions`,
+`FbValOptions`, `TypeAlias`, ...) live in `src/typedefs.js`.
+
+To additionally have the editor type-check calls against those annotations, set
+`checkJs` to `true` in `jsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "checkJs": true
+  }
+}
 ```
 
 ---

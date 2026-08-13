@@ -1,10 +1,68 @@
+/**
+ * @file Type-exclusion filter. Public entry point behind the `fbType` export.
+ */
+
 import { filterEngineRouter, isWalkable, reBook } from '../shared/index.js';
 
+/** @typedef {import('../typedefs.js').Container} Container */
+/** @typedef {import('../typedefs.js').TypeAlias} TypeAlias */
+/** @typedef {import('../typedefs.js').CanonicalType} CanonicalType */
+/** @typedef {import('../typedefs.js').FbTypeOptions} FbTypeOptions */
+/** @typedef {import('../typedefs.js').FilterVerdict} FilterVerdict */
+
+/**
+ * Removes every item whose type matches one of the given type names.
+ *
+ * RozFil works on an exclusion model: the listed types are what gets deleted,
+ * everything else survives. Nested arrays and objects are always walked into
+ * (up to `options.depth`) rather than being matched as a whole, unless the
+ * requested type is itself `array` or `object`.
+ *
+ * @example
+ * // strip native numbers and stringified numbers
+ * fbType([10, 'hello', '123', null], ['num'], { rigor: 3 });
+ * // => ['hello', null]
+ *
+ * @example
+ * // rigor 2 separates NaN from number
+ * fbType([1, NaN, 2], ['nan'], { rigor: 2 });
+ * // => [1, 2]
+ *
+ * @param {Container} ele Array or plain object to filter.
+ * @param {TypeAlias[]} input Type names to exclude, shorthand or canonical.
+ *   Duplicates are collapsed before use.
+ * @param {FbTypeOptions} [options={}] Traversal and precision settings.
+ * @returns {Container} The filtered container — a `structuredClone` of `ele`
+ *   by default, or `ele` itself when `options.inPlace` is `true`.
+ * @throws {Error} `Rigor must be 1/2/3` when `options.rigor` is outside 1-3.
+ * @throws {Error} `Unsupported type` when `ele` is neither array nor plain object.
+ * @throws {Error} `Type Error, only those allowed at the selected rigor` when a
+ *   name in `input` is unknown, or is not selectable at the chosen rigor —
+ *   e.g. `'nan'` at rigor 1.
+ * @throws {Error} `Types is more than N` when `input` holds more distinct names
+ *   than the chosen rigor allows.
+ * @throws {Error} `Array length is less than 1` / `Object items is less than 1`
+ *   when `ele` is empty.
+ * @throws {Error} `unable to clone your ...` when `inPlace` is `false` and `ele`
+ *   holds non-cloneable members such as symbols or functions.
+ * @throws {Error} `In place (inPlace) option must be boolean` /
+ *   `depth option must be integer or infinity` on malformed options.
+ * @throws {TypeError} When `input` is a bare string rather than an array. Pass
+ *   `['num']`, not `'num'`.
+ *
+ * @see {@link module:shared/translator~translator} for the full alias table.
+ */
 function filterByType(ele, input, options = {}) {
 
 	const rigor = options.rigor || 1;
 	if (rigor < 1 || rigor > 3) throw new Error("Rigor must be 1/2/3")
 	
+	/**
+	 * Canonical type names selectable at the active rigor level. Anything in
+	 * `input` that does not translate into this list is rejected.
+	 *
+	 * @type {CanonicalType[] | undefined}
+	 */
 	let allowed;
 	
 	if (rigor === 1) {
@@ -13,19 +71,53 @@ function filterByType(ele, input, options = {}) {
 		allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emptyStringOrWithSpaces', 'emptyObject', 'emptyArray', 'date'];
 	}
 
+	/**
+	 * Decides the fate of a single value for one requested type.
+	 *
+	 * Called once per value per entry in `input`. A container that did not
+	 * match the requested type is reported as walkable so the looping helpers
+	 * recurse into it instead of discarding it.
+	 *
+	 * @param {string | undefined} key Property name when walking an object,
+	 *   `undefined` when walking an array. Unused — matching is value-based.
+	 * @param {*} value The value under inspection.
+	 * @param {CanonicalType} currentInput The single type being tested on this pass.
+	 * @returns {FilterVerdict} `true` to delete, `false` to keep, or a walk
+	 *   signal to keep and descend.
+	 */
 	function filterFun(key, value, currentInput){
 
 		const valueType = typeof value;
+		/**
+		 * `value` with surrounding whitespace removed, for the stringified
+		 * comparisons at rigor 3. Stays `undefined` for non-strings.
+		 *
+		 * @type {string | undefined}
+		 */
 		let valueTrim;
 
 		valueType === 'string' ? valueTrim = value.trim() : 'Not String';
 
+		/**
+		 * Rigor 1 match: a plain `typeof` equality check.
+		 *
+		 * @returns {true | undefined} `true` on a match, otherwise `undefined`.
+		 */
 		function rigorOne() {
 			if (currentInput === typeof value) {
 				return true;
 			}
 		}
 
+		/**
+		 * Rigor 2 match: strict native type differentiation.
+		 *
+		 * Unlike `typeof`, this pulls `null`, `NaN`, `Infinity` and `array`
+		 * out of their broad buckets so each can be excluded on its own.
+		 * `date` matches strings that `Date.parse` accepts.
+		 *
+		 * @returns {true | undefined} `true` on a match, otherwise `undefined`.
+		 */
 		function rigorTwo() {
 			
 			if (currentInput === 'string' && valueType === 'string') {
@@ -90,6 +182,17 @@ function filterByType(ele, input, options = {}) {
 
 		}
 
+		/**
+		 * Rigor 3 match: everything rigor 2 detects, plus text-wrapped data.
+		 *
+		 * A string is also treated as the type it spells out, so `'123'`
+		 * matches `number`, `'true'` matches `boolean`, `'[1,2]'` matches
+		 * `array` and `'{a:1}'` matches `object`. Conversely `string` stops
+		 * matching strings that look like stringified JSON. The `empty*`
+		 * aliases are only meaningful at this level.
+		 *
+		 * @returns {true | undefined} `true` on a match, otherwise `undefined`.
+		 */
 		function rigorThree() {
 			
 			if (currentInput === 'string' && valueType === 'string' && !reBook.jsonObjArrRe.test(value)) {
