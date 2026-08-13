@@ -38,7 +38,7 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-console.log(fbType(myArray, ['true'], {inPlace: true, cs: false, depth: 7, rigor: 3}))
+console.log(fbType(myArray, ['true'], {inPlace: true, depth: 7, rigor: 3}))
 console.log(fbVal(myArray, ['Tamer'], {inPlace: true, depth: 7}))
 
 console.log('End');

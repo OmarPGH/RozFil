@@ -276,17 +276,12 @@ function loopingOnArray(arr, currentInput, filterFun, depth, currentDepth = 1) {
  * @param {number} [depth=Infinity] Maximum nesting level to descend into.
  * @param {FilterPredicate} filterFun Per-value matching callback.
  * @returns {Record<string, any>} The same `obj` reference, filtered.
- * @throws {ReferenceError} `arr is not defined` when `input` is not an array.
- *
- * @todo The non-array branch passes an undeclared `arr` instead of `obj`, so
- *   `fbVal({...}, 'x')` throws. Reachable only from `fbVal`, since `fbType`
- *   rejects non-array input earlier.
  */
 function processObjectFilter(obj, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
 
     if (!Array.isArray(input)) {
-        loopingOnObject(arr, input, filterFun, depth);
+        loopingOnObject(obj, input, filterFun, depth);
     } else {
         for (let i = 0; i < inputLen; i++) {
             loopingOnObject(obj, input[i], filterFun, depth);
