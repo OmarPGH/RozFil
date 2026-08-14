@@ -205,6 +205,9 @@ RozFil/
 │       ├── jsonValidator.test.js
 │       ├── regexBook.test.js
 │       └── translator.test.js
+├── benchmarks/                      # Performance measurement
+│   ├── harness.js                   # Timing and scaling utilities
+│   └── index.js                     # Benchmark suite
 ├── jsconfig.json                    # Editor IntelliSense configuration
 ├── package.json
 ├── LICENSE
@@ -260,6 +263,37 @@ node --test tests/filters/filterByType.test.js
 
 A handful of checks are marked with `todo`. These document known gaps —
 they report as `⚠` and describe the gap, but do not fail the run.
+
+---
+
+## Benchmarks
+
+```bash
+npm run bench
+```
+
+Zero dependencies, same as the tests. The suite doubles the input size
+repeatedly and reports the **per-element cost** at each size. That is the
+number to watch: work that is genuinely O(n) costs the same per element no
+matter how large the input gets, so the drift from smallest to largest stays
+near `1.00×`. Absolute timings vary by machine and are not worth comparing
+across hosts.
+
+The run exits non-zero if an asserted sweep turns super-linear, so it doubles
+as a performance regression check.
+
+Two results worth knowing:
+
+- **Array compaction is linear**, holding flat at roughly 25–30 ns per element
+  from 25,000 up to 800,000. This is the O(N) two-pointer claim under *Key
+  Features*, and it holds.
+- **Object filtering is not.** Repeated `delete` moves V8 out of its fast
+  object representation into dictionary mode, so per-element cost climbs with
+  size — around 2.7× across the same range. Nothing in RozFil can avoid that.
+  Prefer arrays for very large collections.
+
+Cloning costs roughly 5× the filtering itself, which is what `inPlace: true`
+buys back when you can afford to mutate.
 
 ---
 
