@@ -189,9 +189,20 @@ RozFil/
 │       ├── regexBook.js             # Regular expressions repository
 │       ├── translator.js            # Type alias translator
 │       └── invalid.js               # Fallback markers
-├── tests/                           # Test scripts
-│   ├── arrUtilsTest.js
-│   └── objUtilsTest.js
+├── tests/                           # Test suite, mirroring src/
+│   ├── regressions.test.js          # Guards against previously fixed bugs
+│   ├── engines/
+│   │   ├── arrayFilterEngine.test.js
+│   │   └── objectFilterEngine.test.js
+│   ├── filters/
+│   │   ├── filterByType.test.js
+│   │   └── filterByValue.test.js
+│   └── shared/
+│       ├── baseFilterEngine.test.js
+│       ├── filterEngineRouter.test.js
+│       ├── isWalkable.test.js
+│       ├── regexBook.test.js
+│       └── translator.test.js
 ├── jsconfig.json                    # Editor IntelliSense configuration
 ├── package.json
 ├── LICENSE
@@ -222,12 +233,31 @@ To additionally have the editor type-check calls against those annotations, set
 
 ## Testing
 
-Run test execution scripts using Node.js:
+Tests run on the **native Node.js test runner** (`node:test` + `node:assert/strict`).
+There are no third-party dependencies and no install step.
 
 ```bash
-node tests/arrUtilsTest.js
-node tests/objUtilsTest.js
+npm test
 ```
+
+Or invoke the runner directly:
+
+```bash
+node --test tests/**/*.test.js
+```
+
+Test files mirror the `src/` layout, so the tests for a module live at the
+matching path under `tests/`. Add new ones as `*.test.js` and they are picked
+up automatically.
+
+To run a single file while working on it:
+
+```bash
+node --test tests/filters/filterByType.test.js
+```
+
+A handful of checks are marked with `todo`. These document known gaps —
+they report as `⚠` and describe the gap, but do not fail the run.
 
 ---
 
