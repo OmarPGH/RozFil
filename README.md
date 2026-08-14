@@ -85,7 +85,12 @@ const dataset = [
 
 // Exclude native numbers and stringified numbers (rigor level 3)
 const cleaned = fbType(dataset, ['num'], { rigor: 3 });
-// Result: ['hello', NaN, [1, 2], '[1, 2]', undefined, null]
+// Result: ['hello', NaN, [], '[1, 2]', undefined, null]
+//
+// Note the empty array: `depth` defaults to Infinity, so the nested
+// [1, 2] is walked into and its numbers are removed too. The container
+// itself is always kept — only its contents go. Pass { depth: 1 } to
+// inspect just the top level.
 
 // Strict exclusion of NaN and Arrays (rigor level 2)
 const strictClean = fbType(dataset, ['nan', 'arr'], { rigor: 2 });
