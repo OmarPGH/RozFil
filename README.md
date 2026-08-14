@@ -186,6 +186,7 @@ RozFil/
 │       ├── baseFilterEngine.js      # Core loops and array compaction
 │       ├── filterEngineRouter.js    # Container type router
 │       ├── isWalkable.js            # Nested object/array inspector
+│       ├── jsonValidator.js         # Safe stringified-JSON detection
 │       ├── regexBook.js             # Regular expressions repository
 │       ├── translator.js            # Type alias translator
 │       └── invalid.js               # Fallback markers
@@ -201,6 +202,7 @@ RozFil/
 │       ├── baseFilterEngine.test.js
 │       ├── filterEngineRouter.test.js
 │       ├── isWalkable.test.js
+│       ├── jsonValidator.test.js
 │       ├── regexBook.test.js
 │       └── translator.test.js
 ├── jsconfig.json                    # Editor IntelliSense configuration

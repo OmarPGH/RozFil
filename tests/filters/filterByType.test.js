@@ -140,8 +140,9 @@ describe('fbType', () => {
 			assert.deepStrictEqual(fbType([9n, '9n', 'x'], ['bi'], { rigor: 3, inPlace: true }), ['x']);
 		});
 
-		it('stops matching strings that look like stringified JSON as string', () => {
-			assert.deepStrictEqual(fbType(['{a:1}', 'plain'], ['str'], { rigor: 3 }), ['{a:1}']);
+		it('stops matching strings that parse as JSON containers as string', () => {
+			assert.deepStrictEqual(fbType(['{"a":1}', 'plain'], ['str'], { rigor: 3 }), ['{"a":1}']);
+			assert.deepStrictEqual(fbType(['[1,2]', 'plain'], ['str'], { rigor: 3 }), ['[1,2]']);
 		});
 
 		describe('empty aliases', () => {
@@ -168,11 +169,17 @@ describe('fbType', () => {
 
 		});
 
-		it('known overlap: a bare stringified array matches both str and arr', () => {
-			// jsonObjArrRe only excludes objects and arrays-of-objects from the
-			// `string` match, so '[1,2]' satisfies both aliases at rigor 3.
-			assert.deepStrictEqual(fbType(['[1,2]', 'keep'], ['arr'], { rigor: 3 }), ['keep']);
-			assert.deepStrictEqual(fbType(['[1,2]', 'keep'], ['str'], { rigor: 3 }), []);
+		it('known overlap: brace-wrapped text that is not valid JSON matches both obj and str', () => {
+			// `object` and `array` use the loose shape tests in regexBook, while
+			// the `string` exclusion parses strictly (issue #21). So '{a:1}' is
+			// object-shaped but not parseable, and satisfies both aliases.
+			assert.deepStrictEqual(fbType(['{a:1}', 'keep'], ['obj'], { rigor: 3 }), ['keep']);
+			assert.deepStrictEqual(fbType(['{a:1}', 'keep'], ['str'], { rigor: 3 }), []);
+		});
+
+		it('valid JSON is excluded from str, so the two no longer overlap there', () => {
+			assert.deepStrictEqual(fbType(['{"a":1}', 'keep'], ['obj'], { rigor: 3 }), ['keep']);
+			assert.deepStrictEqual(fbType(['{"a":1}', 'keep'], ['str'], { rigor: 3 }), ['{"a":1}']);
 		});
 
 	});
