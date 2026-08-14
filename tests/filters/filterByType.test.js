@@ -125,12 +125,29 @@ describe('fbType', () => {
 			assert.deepStrictEqual(fbType([true, 'true', 'false', 'x'], ['bln'], { rigor: 3 }), ['x']);
 		});
 
-		it('treats a bracketed string as an array', () => {
+		it('treats a JSON array string as an array', () => {
 			assert.deepStrictEqual(fbType([[1], '[1,2]', 'x'], ['arr'], { rigor: 3 }), ['x']);
 		});
 
-		it('treats a braced string as an object', () => {
-			assert.deepStrictEqual(fbType([{ a: 1 }, '{a:1}', 'x'], ['obj'], { rigor: 3 }), ['x']);
+		it('treats a JSON object string as an object', () => {
+			assert.deepStrictEqual(fbType([{ a: 1 }, '{"a":1}', 'x'], ['obj'], { rigor: 3 }), ['x']);
+		});
+
+		it('requires valid JSON, not merely a container shape — issue #33', () => {
+			// '{a:1}' has an unquoted key, so it is text rather than an object.
+			assert.deepStrictEqual(fbType(['{a:1}', 'keep'], ['obj'], { rigor: 3 }), ['{a:1}', 'keep']);
+			assert.deepStrictEqual(fbType(['[a,b]', 'keep'], ['arr'], { rigor: 3 }), ['[a,b]', 'keep']);
+			assert.deepStrictEqual(fbType(['[{a:1}]', 'keep'], ['arr'], { rigor: 3 }), ['[{a:1}]', 'keep']);
+		});
+
+		it('tells arrays and objects apart rather than matching both', () => {
+			assert.deepStrictEqual(fbType(['[1,2]', 'keep'], ['obj'], { rigor: 3 }), ['[1,2]', 'keep']);
+			assert.deepStrictEqual(fbType(['{"a":1}', 'keep'], ['arr'], { rigor: 3 }), ['{"a":1}', 'keep']);
+		});
+
+		it('still matches live containers by identity, not by parsing', () => {
+			assert.deepStrictEqual(fbType([{ a: 1 }, 'keep'], ['obj'], { rigor: 3 }), ['keep']);
+			assert.deepStrictEqual(fbType([[1, 2], 'keep'], ['arr'], { rigor: 3 }), ['keep']);
 		});
 
 		it('treats stringified null, NaN, Infinity and bigint as their type', () => {
@@ -169,17 +186,29 @@ describe('fbType', () => {
 
 		});
 
-		it('known overlap: brace-wrapped text that is not valid JSON matches both obj and str', () => {
-			// `object` and `array` use the loose shape tests in regexBook, while
-			// the `string` exclusion parses strictly (issue #21). So '{a:1}' is
-			// object-shaped but not parseable, and satisfies both aliases.
-			assert.deepStrictEqual(fbType(['{a:1}', 'keep'], ['obj'], { rigor: 3 }), ['keep']);
-			assert.deepStrictEqual(fbType(['{a:1}', 'keep'], ['str'], { rigor: 3 }), []);
-		});
+		it('a string satisfies exactly one of str, arr and obj — issue #33', () => {
+			// Arrange: one representative of each outcome
+			const cases = [
+				['{"a":1}', 'obj'],
+				['[1,2]', 'arr'],
+				['{a:1}', 'str'],
+				['[a,b]', 'str'],
+				['[{a:1}]', 'str'],
+				['plain', 'str'],
+			];
 
-		it('valid JSON is excluded from str, so the two no longer overlap there', () => {
-			assert.deepStrictEqual(fbType(['{"a":1}', 'keep'], ['obj'], { rigor: 3 }), ['keep']);
-			assert.deepStrictEqual(fbType(['{"a":1}', 'keep'], ['str'], { rigor: 3 }), ['{"a":1}']);
+			// Act / Assert
+			for (const [value, expected] of cases) {
+				const matched = ['str', 'arr', 'obj'].filter((alias) => {
+					const survivors = fbType([value, 'sentinel'], [alias], { rigor: 3 });
+					return !survivors.includes(value);
+				});
+
+				assert.deepStrictEqual(
+					matched, [expected],
+					`${JSON.stringify(value)} should match only ${expected}, got [${matched}]`
+				);
+			}
 		});
 
 	});
@@ -330,11 +359,10 @@ describe('fbType', () => {
 
 	describe('known gaps', () => {
 
-		it('should reject rigor 0 rather than silently treating it as rigor 1',
-			{ todo: 'see issue #29 — options.rigor || 1 turns 0 into 1, so the rigor < 1 guard is unreachable' },
-			() => {
-				assert.throws(() => fbType([1], ['num'], { rigor: 0 }), /Rigor must be 1\/2\/3/);
-			});
+		it('rejects rigor 0 rather than silently treating it as rigor 1', () => {
+			// Fixed in #29 by defaulting with `??`, which made the guard reachable.
+			assert.throws(() => fbType([1], ['num'], { rigor: 0 }), /Rigor must be 1\/2\/3/);
+		});
 
 		it('should accept a bare string type name, as the README documents',
 			{ todo: 'validateAndTranslateInput writes back into the input, which fails on an immutable string' },

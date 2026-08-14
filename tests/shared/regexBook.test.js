@@ -61,30 +61,6 @@ describe('regexBook', () => {
 
 	});
 
-	describe('arrRe', () => {
-
-		it('matches square-bracket-wrapped text, including empty', () => {
-			expectMatches(reBook.arrRe, ['[1,2]', '[]', '[ anything ]'], []);
-		});
-
-		it('rejects unbalanced or unwrapped text', () => {
-			expectMatches(reBook.arrRe, [], ['x', '[1,2', '1,2]']);
-		});
-
-	});
-
-	describe('objectRe', () => {
-
-		it('matches curly-brace-wrapped text, including empty', () => {
-			expectMatches(reBook.objectRe, ['{a:1}', '{}', '{ anything }'], []);
-		});
-
-		it('rejects unbalanced or unwrapped text', () => {
-			expectMatches(reBook.objectRe, [], ['x', '{a:1', 'a:1}']);
-		});
-
-	});
-
 	describe('emptyStringWithSpacesRe', () => {
 
 		it('matches whitespace-only strings', () => {
@@ -130,8 +106,20 @@ describe('regexBook', () => {
 			});
 		}
 
-		it('no longer exports jsonObjArrRe', () => {
+		it('no longer exports the removed container patterns', () => {
+			// jsonObjArrRe went in #21 for ReDoS; arrRe and objectRe went in #33
+			// once container detection moved to jsonKindOf.
 			assert.strictEqual(reBook.jsonObjArrRe, undefined);
+			assert.strictEqual(reBook.arrRe, undefined);
+			assert.strictEqual(reBook.objectRe, undefined);
+		});
+
+		it('every remaining export is still in use by filterByType', () => {
+			// Guards against this file accumulating dead patterns again.
+			assert.deepStrictEqual(
+				Object.keys(reBook).sort(),
+				['bigintRe', 'emptyStringWithSpacesRe', 'numberRe']
+			);
 		});
 
 	});

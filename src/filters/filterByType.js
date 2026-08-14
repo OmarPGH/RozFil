@@ -2,7 +2,7 @@
  * @file Type-exclusion filter. Public entry point behind the `fbType` export.
  */
 
-import { filterEngineRouter, isWalkable, isValidJSONObjectOrArray, reBook } from '../shared/index.js';
+import { filterEngineRouter, isWalkable, isValidJSONObjectOrArray, jsonKindOf, reBook } from '../shared/index.js';
 
 /** @typedef {import('../typedefs.js').Container} Container */
 /** @typedef {import('../typedefs.js').TypeAlias} TypeAlias */
@@ -187,15 +187,16 @@ function filterByType(ele, input, options = {}) {
 		 *
 		 * A string is also treated as the type it spells out, so `'123'`
 		 * matches `number`, `'true'` matches `boolean`, `'[1,2]'` matches
-		 * `array` and `'{a:1}'` matches `object`. Conversely `string` stops
-		 * matching strings that parse as JSON objects or arrays. The `empty*`
-		 * aliases are only meaningful at this level.
+		 * `array` and `'{"a":1}'` matches `object`. Conversely `string` stops
+		 * matching strings that parse as JSON containers. The `empty*` aliases
+		 * are only meaningful at this level.
 		 *
-		 * Note the asymmetry: `array` and `object` use the loose shape tests
-		 * in {@link module:shared/regexBook}, while the `string` exclusion
-		 * uses strict JSON parsing. A brace-wrapped string that is not valid
-		 * JSON, such as `'{a:1}'`, therefore matches both `object` and
-		 * `string`.
+		 * `array`, `object` and `string` all route through
+		 * {@link module:shared/jsonValidator~jsonKindOf}, so a string can only
+		 * ever satisfy one of the three. Detection is strict: `'{a:1}'` has an
+		 * unquoted key and is therefore text, not an object. The loose shape
+		 * tests that used to back `array` and `object` let a value match two
+		 * aliases at once — see issue #33.
 		 *
 		 * @returns {true | undefined} `true` on a match, otherwise `undefined`.
 		 */
@@ -225,11 +226,11 @@ function filterByType(ele, input, options = {}) {
 				return true;
 			} 
 
-			if (currentInput === 'array' && (Array.isArray(value) || reBook.arrRe.test(valueTrim))) {
+			if (currentInput === 'array' && (Array.isArray(value) || jsonKindOf(value) === 'array')) {
 				return true;
-			} 
+			}
 
-			if (currentInput === 'object' && (valueType === 'object' && value !== null && !Array.isArray(value) || reBook.objectRe.test(valueTrim))) {
+			if (currentInput === 'object' && (valueType === 'object' && value !== null && !Array.isArray(value) || jsonKindOf(value) === 'object')) {
 				return true;
 			}
 

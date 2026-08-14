@@ -156,6 +156,25 @@ compare(`criteria count, ${CMP_SIZE.toLocaleString()} elements — each is a ful
 	).median,
 });
 
+// Rigor 3 routes `str`, `arr` and `obj` through JSON.parse (issues #21, #33).
+// Parsing is cheap; *failing* to parse is not, because throwing dominates. The
+// opening-character fast path keeps that cost off strings which cannot be
+// containers at all, which is the overwhelmingly common case.
+compare(`rigor 3 container detection, ${CMP_SIZE.toLocaleString()} strings, obj`, {
+	'plain text (fast path)': measure(
+		(d) => fbType(d, ['obj'], { rigor: 3, inPlace: true }),
+		{ setup: () => new Array(CMP_SIZE).fill('plain text here') }
+	).median,
+	'valid JSON (parses)': measure(
+		(d) => fbType(d, ['obj'], { rigor: 3, inPlace: true }),
+		{ setup: () => new Array(CMP_SIZE).fill('{"a":1}') }
+	).median,
+	'malformed braces (throws)': measure(
+		(d) => fbType(d, ['obj'], { rigor: 3, inPlace: true }),
+		{ setup: () => new Array(CMP_SIZE).fill('{a:1}') }
+	).median,
+});
+
 compare(`traversal depth, ~${CMP_SIZE.toLocaleString()} leaves`, {
 	'flat': measure(
 		(d) => fbType(d, ['num'], { rigor: 2, inPlace: true }),

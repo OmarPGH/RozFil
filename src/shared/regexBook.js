@@ -3,31 +3,20 @@
  *
  * These patterns back the rigor 3 "stringified type" detection: they decide
  * whether a string should be treated as the data type it spells out rather
- * than as plain text. They are shape tests, not parsers — `'{oops'` is
- * rejected, but `'{not: valid json}'` is accepted as an object-looking string.
+ * than as plain text. They are shape tests, not parsers, which is why they
+ * suit scalars — a numeric string either looks like a number or it does not,
+ * with no structure to get wrong.
  *
- * Every pattern here is anchored and free of nested quantifiers, so each runs
- * in linear time. The one exception, `jsonObjArrRe`, was removed in favour of
- * {@link module:shared/jsonValidator~isValidJSONObjectOrArray} after it was
- * found vulnerable to polynomial ReDoS — see issue #21.
+ * Container detection deliberately no longer lives here. `arrRe` and
+ * `objectRe` were removed in #33 once `array`, `object` and `string` were all
+ * routed through {@link module:shared/jsonValidator~jsonKindOf}: being shape
+ * tests, they accepted text such as `'{a:1}'` that does not parse, which let a
+ * single value match two aliases at once. `jsonObjArrRe` went earlier, in #21,
+ * for being vulnerable to polynomial ReDoS.
+ *
+ * Every remaining pattern is anchored and free of nested quantifiers, so each
+ * runs in linear time.
  */
-
-/**
- * Matches a string wrapped in square brackets, e.g. `'[1, 2]'`.
- *
- * Tested against the trimmed value, so leading and trailing whitespace is
- * tolerated by the caller rather than by the pattern.
- *
- * @type {RegExp}
- */
-export let arrRe = /^\[.*\]$/;
-
-/**
- * Matches a string wrapped in curly braces, e.g. `'{a: 1}'`.
- *
- * @type {RegExp}
- */
-export let objectRe = /^\{.*\}$/;
 
 /**
  * Matches a decimal integer or float, optionally signed, e.g. `'-12.5'`.

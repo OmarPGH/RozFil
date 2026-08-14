@@ -8,7 +8,93 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { isValidJSONObjectOrArray } from '../../src/shared/jsonValidator.js';
+import { isValidJSONObjectOrArray, jsonKindOf } from '../../src/shared/jsonValidator.js';
+
+describe('jsonKindOf', () => {
+
+	describe('identifies the container kind', () => {
+
+		it('reports objects as object', () => {
+			for (const value of ['{}', '{"a":1}', '{"a":{"b":[1,2]}}', '  {"a":1}  ']) {
+				assert.strictEqual(jsonKindOf(value), 'object', `${value} should be an object`);
+			}
+		});
+
+		it('reports arrays as array', () => {
+			for (const value of ['[]', '[1,2]', '[{"a":1}]', '[[1],[2]]', '  [1]  ']) {
+				assert.strictEqual(jsonKindOf(value), 'array', `${value} should be an array`);
+			}
+		});
+
+		it('never reports both — this is what fixes the alias overlap', () => {
+			// Arrange / Act / Assert: a value is one kind or neither, never two.
+			for (const value of ['{"a":1}', '[1,2]', '{a:1}', 'plain', '123']) {
+				const kind = jsonKindOf(value);
+				assert.ok(
+					kind === 'object' || kind === 'array' || kind === null,
+					`unexpected kind ${kind} for ${value}`
+				);
+			}
+		});
+
+	});
+
+	describe('returns null for anything that is not a JSON container', () => {
+
+		it('rejects primitives that JSON.parse would accept', () => {
+			for (const value of ['123', 'true', 'false', 'null', '"text"']) {
+				assert.strictEqual(jsonKindOf(value), null, `${value} should be rejected`);
+			}
+		});
+
+		it('rejects container-shaped text that is not valid JSON', () => {
+			for (const value of ['{a:1}', '[a,b]', '[{a:1}]', "{'a':1}", '[1,2,]', '{"a":1,}']) {
+				assert.strictEqual(jsonKindOf(value), null, `${value} should be rejected`);
+			}
+		});
+
+		it('rejects unbalanced brackets', () => {
+			for (const value of ['{', '[', '}', ']', '{"a":1', '[1,2']) {
+				assert.strictEqual(jsonKindOf(value), null, `${value} should be rejected`);
+			}
+		});
+
+		it('rejects non-strings without throwing', () => {
+			for (const value of [null, undefined, 123, true, {}, [], () => {}, 9n]) {
+				assert.doesNotThrow(() => jsonKindOf(value));
+				assert.strictEqual(jsonKindOf(value), null);
+			}
+		});
+
+		it('rejects the empty string', () => {
+			assert.strictEqual(jsonKindOf(''), null);
+			assert.strictEqual(jsonKindOf('   '), null);
+		});
+
+	});
+
+	describe('opening-character fast path', () => {
+
+		// Anything not starting with { or [ cannot be a JSON container, so it is
+		// rejected before JSON.parse is called. Throwing is far more expensive
+		// than parsing, and at rigor 3 this runs against every string.
+		it('rejects a huge non-container string quickly', () => {
+			// Arrange
+			const payload = 'x'.repeat(500000);
+
+			// Act
+			const started = process.hrtime.bigint();
+			const kind = jsonKindOf(payload);
+			const elapsed = Number(process.hrtime.bigint() - started) / 1e6;
+
+			// Assert
+			assert.strictEqual(kind, null);
+			assert.ok(elapsed < 100, `took ${elapsed.toFixed(1)}ms`);
+		});
+
+	});
+
+});
 
 describe('isValidJSONObjectOrArray', () => {
 

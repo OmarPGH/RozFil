@@ -40,7 +40,7 @@ Instead of writing complex conditional loops, RozFil provides functional, depth-
 - **Three-Level Type Rigor**:
   - Level 1: Standard JavaScript `typeof` checks.
   - Level 2: Strict primitive and native type differentiation (`NaN`, `Infinity`, `null`, `Date`, `Array`, `Object`).
-  - Level 3: Smart stringified type detection (`'123'` as number, `'true'` as boolean, `'[1,2]'` as array, `'{a:1}'` as object).
+  - Level 3: Smart stringified type detection (`'123'` as number, `'true'` as boolean, `'[1,2]'` as array, `'{"a":1}'` as object). Container detection is strict — a string must be valid JSON, so `'{a:1}'` counts as text rather than an object.
 - **Flexible Options**: Control recursion depth, in-place mutation, and case sensitivity.
 - **Fast Array Compaction**: Implements O(N) two-pointer write compaction for high performance.
 
