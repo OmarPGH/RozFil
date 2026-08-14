@@ -274,6 +274,32 @@ describe('fbType', () => {
 			assert.deepStrictEqual(fbType([1, 'a'], ['  NUM  '], { rigor: 2 }), ['a']);
 		});
 
+		it('accepts a bare string instead of an array — issue #32', () => {
+			assert.deepStrictEqual(fbType([1, 'a'], 'num', { rigor: 2 }), ['a']);
+		});
+
+		it('treats a bare string identically to a single-element array', () => {
+			for (const rigor of [1, 2, 3]) {
+				assert.deepStrictEqual(
+					fbType([1, 'a', true], 'num', { rigor }),
+					fbType([1, 'a', true], ['num'], { rigor }),
+					`rigor ${rigor} should agree`
+				);
+			}
+		});
+
+		it('accepts a bare string on an object container', () => {
+			assert.deepStrictEqual(fbType({ a: 1, b: 'keep' }, 'num', { rigor: 2 }), { b: 'keep' });
+		});
+
+		it('normalizes casing and whitespace on a bare string', () => {
+			assert.deepStrictEqual(fbType([1, 'a'], '  NUM  ', { rigor: 2 }), ['a']);
+		});
+
+		it('still rejects an unknown bare string', () => {
+			assert.throws(() => fbType([1], 'not-a-type'), /only those allowed at the selected rigor/);
+		});
+
 		it('returns the container untouched for an empty type list', () => {
 			// Arrange
 			const original = [1, 2];
@@ -334,12 +360,6 @@ describe('fbType', () => {
 			{ todo: 'see issue #29 — options.rigor || 1 turns 0 into 1, so the rigor < 1 guard is unreachable' },
 			() => {
 				assert.throws(() => fbType([1], ['num'], { rigor: 0 }), /Rigor must be 1\/2\/3/);
-			});
-
-		it('should accept a bare string type name, as the README documents',
-			{ todo: 'validateAndTranslateInput writes back into the input, which fails on an immutable string' },
-			() => {
-				assert.deepStrictEqual(fbType([1, 'a'], 'num', { rigor: 2 }), ['a']);
 			});
 
 	});

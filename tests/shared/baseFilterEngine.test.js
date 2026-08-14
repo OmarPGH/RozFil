@@ -94,9 +94,22 @@ describe('sanitizeInput', () => {
 		assert.deepStrictEqual(original, ['num']);
 	});
 
-	it('passes a non-array, non-object value straight through', () => {
-		assert.strictEqual(sanitizeInput('x'), 'x');
-		assert.strictEqual(sanitizeInput(5), 5);
+	it('wraps a lone value into a single-element array — issue #32', () => {
+		assert.deepStrictEqual(sanitizeInput('x'), ['x']);
+		assert.deepStrictEqual(sanitizeInput(5), [5]);
+	});
+
+	it('wraps null and undefined rather than letting them through', () => {
+		// Everything downstream indexes into the result, so a bare null used to
+		// throw on the length check.
+		assert.deepStrictEqual(sanitizeInput(null), [null]);
+		assert.deepStrictEqual(sanitizeInput(undefined), [undefined]);
+	});
+
+	it('always returns an array, whatever the input shape', () => {
+		for (const value of ['x', 5, true, null, undefined, 9n, ['a', 'a']]) {
+			assert.ok(Array.isArray(sanitizeInput(value)), `${String(value)} should normalize to an array`);
+		}
 	});
 
 	it('rejects a plain object, which cannot be told apart from a container', () => {
@@ -237,10 +250,6 @@ describe('processArrayFilter', () => {
 		);
 	});
 
-	it('accepts a single non-array criterion', () => {
-		assert.deepStrictEqual(processArrayFilter([1, 2, 3], 2, Infinity, dropEqual), [1, 3]);
-	});
-
 	it('preserves the order of survivors', () => {
 		assert.deepStrictEqual(
 			processArrayFilter(['a', 'x', 'b', 'x', 'c'], ['x'], Infinity, dropEqual),
@@ -289,10 +298,6 @@ describe('processObjectFilter', () => {
 			processObjectFilter({ a: 1, b: 2, c: 3 }, [1, 3], Infinity, dropEqual),
 			{ b: 2 }
 		);
-	});
-
-	it('accepts a single non-array criterion', () => {
-		assert.deepStrictEqual(processObjectFilter({ a: 1, b: 2 }, 1, Infinity, dropEqual), { b: 2 });
 	});
 
 	it('mutates and returns the same reference', () => {

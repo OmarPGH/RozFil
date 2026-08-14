@@ -34,8 +34,10 @@ import { filterEngineRouter, isWalkable } from '../shared/index.js';
  *
  * @param {Container} ele Array or plain object to filter.
  * @param {any[] | *} input Values to remove — either an array, or a single
- *   value. Duplicates are collapsed before use. A non-array *object* is
- *   rejected, since it cannot be told apart from a container.
+ *   value. A lone value is wrapped, so `fbVal(data, 'x')` and
+ *   `fbVal(data, ['x'])` are equivalent, and `fbVal(data, null)` removes
+ *   `null` values. Duplicates are collapsed before use. A non-array *object*
+ *   is rejected, since it cannot be told apart from a container.
  * @param {FbValOptions} [options={}] Traversal and comparison settings.
  * @returns {Container} The filtered container — a `structuredClone` of `ele`
  *   by default, or `ele` itself when `options.inPlace` is `true`.
