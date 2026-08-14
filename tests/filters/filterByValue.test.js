@@ -42,6 +42,18 @@ describe('fbVal', () => {
 			assert.deepStrictEqual(fbVal({ a: 'x', b: 'y' }, 'x'), { b: 'y' });
 		});
 
+		it('removes null values when given a bare null — issue #32', () => {
+			// Wrapping turns this into [null], which matches null through the
+			// stringified comparison, rather than throwing on the length check.
+			assert.deepStrictEqual(fbVal([null, 'keep'], null), ['keep']);
+			assert.deepStrictEqual(fbVal({ a: null, b: 'keep' }, null), { b: 'keep' });
+		});
+
+		it('treats a bare value identically to a single-element array', () => {
+			assert.deepStrictEqual(fbVal([1, 2, 3], 2), fbVal([1, 2, 3], [2]));
+			assert.deepStrictEqual(fbVal(['a', 'b'], 'a'), fbVal(['a', 'b'], ['a']));
+		});
+
 		it('returns the container untouched for an empty criteria list', () => {
 			// Arrange
 			const original = ['a', 'b'];

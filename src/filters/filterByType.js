@@ -29,7 +29,9 @@ import { filterEngineRouter, isWalkable, isValidJSONObjectOrArray, reBook } from
  * // => [1, 2]
  *
  * @param {Container} ele Array or plain object to filter.
- * @param {TypeAlias[]} input Type names to exclude, shorthand or canonical.
+ * @param {TypeAlias[] | TypeAlias} input Type names to exclude, shorthand or
+ *   canonical. Accepts an array, or a single name on its own —
+ *   `fbType(data, 'num')` and `fbType(data, ['num'])` are equivalent.
  *   Duplicates are collapsed before use.
  * @param {FbTypeOptions} [options={}] Traversal and precision settings.
  * @returns {Container} The filtered container — a `structuredClone` of `ele`
@@ -47,8 +49,6 @@ import { filterEngineRouter, isWalkable, isValidJSONObjectOrArray, reBook } from
  *   holds non-cloneable members such as symbols or functions.
  * @throws {Error} `In place (inPlace) option must be boolean` /
  *   `depth option must be integer or infinity` on malformed options.
- * @throws {TypeError} When `input` is a bare string rather than an array. Pass
- *   `['num']`, not `'num'`.
  *
  * @see {@link module:shared/translator~translator} for the full alias table.
  */

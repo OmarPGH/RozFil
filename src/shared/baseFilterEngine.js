@@ -46,15 +46,20 @@ function validateOptions(inPlace, depth) {
 }
 
 /**
- * De-duplicates the criteria list before it is applied.
+ * Normalizes the criteria into a de-duplicated array.
+ *
+ * A lone criterion is wrapped rather than passed through, so everything
+ * downstream can assume an array. That is what lets `fbType(data, 'num')` work
+ * alongside `fbType(data, ['num'])`: without the wrap, the translation step
+ * would index into the string and try to write back into it.
  *
  * Each distinct criterion costs a full pass over the container, so dropping
  * repeats is a real saving. Copying through a `Set` also means the caller's
  * own array is never mutated by the translation step that follows.
  *
- * @param {*} input Criteria supplied by the user.
- * @returns {*} A de-duplicated copy when `input` is an array, otherwise
- *   `input` unchanged.
+ * @param {*} input Criteria supplied by the user — an array, or a single value.
+ * @returns {any[]} A de-duplicated copy of an array input, or a single-element
+ *   array wrapping any other value.
  * @throws {Error} `Invalid input: input mustn't be an object` when `input` is a
  *   non-array object, which would otherwise be silently misread as a criterion.
  */
@@ -64,7 +69,7 @@ function sanitizeInput(input) {
     } else if (typeof input === 'object' && input !== null) {
         throw new Error("Invalid input: input mustn't be an object");
     } else {
-        return input;
+        return [input];
     }
 }
 
@@ -272,7 +277,8 @@ function loopingOnArray(arr, currentInput, filterFun, depth, currentDepth = 1) {
  * entry in `input`.
  *
  * @param {Record<string, any>} obj Object to filter. Mutated in place.
- * @param {*} input Criteria to apply, normally an array.
+ * @param {any[]} input Criteria to apply. Always an array — {@link sanitizeInput}
+ *   wraps a lone criterion before it reaches here.
  * @param {number} [depth=Infinity] Maximum nesting level to descend into.
  * @param {FilterPredicate} filterFun Per-value matching callback.
  * @returns {Record<string, any>} The same `obj` reference, filtered.
@@ -280,12 +286,8 @@ function loopingOnArray(arr, currentInput, filterFun, depth, currentDepth = 1) {
 function processObjectFilter(obj, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
 
-    if (!Array.isArray(input)) {
-        loopingOnObject(obj, input, filterFun, depth);
-    } else {
-        for (let i = 0; i < inputLen; i++) {
-            loopingOnObject(obj, input[i], filterFun, depth);
-        }
+    for (let i = 0; i < inputLen; i++) {
+        loopingOnObject(obj, input[i], filterFun, depth);
     }
 
     return obj;
@@ -294,11 +296,12 @@ function processObjectFilter(obj, input, depth = Infinity, filterFun) {
 /**
  * Applies every criterion to an array, one full pass each.
  *
- * The counterpart to {@link processObjectFilter}; a bare non-array `input` is
- * handled here as a single criterion.
+ * The counterpart to {@link processObjectFilter}, differing only in that
+ * removal compacts the array rather than deleting keys.
  *
  * @param {any[]} arr Array to filter. Mutated in place.
- * @param {*} input Criteria to apply, either an array or a single value.
+ * @param {any[]} input Criteria to apply. Always an array — {@link sanitizeInput}
+ *   wraps a lone criterion before it reaches here.
  * @param {number} [depth=Infinity] Maximum nesting level to descend into.
  * @param {FilterPredicate} filterFun Per-value matching callback.
  * @returns {any[]} The same `arr` reference, filtered and compacted.
@@ -306,12 +309,8 @@ function processObjectFilter(obj, input, depth = Infinity, filterFun) {
 function processArrayFilter(arr, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
 
-    if (!Array.isArray(input)) {
-        loopingOnArray(arr, input, filterFun, depth);
-    } else {    
-        for (let i = 0; i < inputLen; i++) {
-            loopingOnArray(arr, input[i], filterFun, depth);
-        }
+    for (let i = 0; i < inputLen; i++) {
+        loopingOnArray(arr, input[i], filterFun, depth);
     }
 
     return arr;
