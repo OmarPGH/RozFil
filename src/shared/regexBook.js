@@ -5,22 +5,12 @@
  * whether a string should be treated as the data type it spells out rather
  * than as plain text. They are shape tests, not parsers — `'{oops'` is
  * rejected, but `'{not: valid json}'` is accepted as an object-looking string.
+ *
+ * Every pattern here is anchored and free of nested quantifiers, so each runs
+ * in linear time. The one exception, `jsonObjArrRe`, was removed in favour of
+ * {@link module:shared/jsonValidator~isValidJSONObjectOrArray} after it was
+ * found vulnerable to polynomial ReDoS — see issue #21.
  */
-
-/**
- * Matches a string that looks like a stringified JSON object, or an array of
- * them.
- *
- * Used at rigor 3 to *exclude* such strings from matching `string`, so that
- * `'{a:1}'` is filtered as an object rather than as text.
- *
- * @todo Vulnerable to polynomial ReDoS via the nested `\s*.*?\s*` quantifiers;
- *   tracked in issue #21 and replaced by `isValidJSONObjectOrArray()` in the
- *   pending fix.
- *
- * @type {RegExp}
- */
-export let jsonObjArrRe = /^(\{\s*.*?\s*\}|\[\s*\{\s*.*?\s*\}\s*\])$/;
 
 /**
  * Matches a string wrapped in square brackets, e.g. `'[1, 2]'`.

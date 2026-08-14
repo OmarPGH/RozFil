@@ -4,6 +4,9 @@
  * These patterns drive rigor 3 stringified type detection. They are shape
  * tests rather than parsers, so the cases below pin down both what they match
  * and what they deliberately do not.
+ *
+ * Stringified-JSON detection no longer lives here — see
+ * tests/shared/jsonValidator.test.js.
  */
 
 import { describe, it } from 'node:test';
@@ -98,21 +101,37 @@ describe('regexBook', () => {
 
 	});
 
-	describe('jsonObjArrRe', () => {
+	describe('no backtracking hazards remain', () => {
 
-		it('matches a stringified object, or an array of objects', () => {
-			expectMatches(reBook.jsonObjArrRe, ['{a:1}', '{}', '[{a:1}]', '[{}]'], []);
-		});
+		// jsonObjArrRe was removed in favour of a JSON.parse based validator
+		// after it was found vulnerable to polynomial ReDoS (issue #21). Guard
+		// against a similar pattern being reintroduced here.
+		/** Inputs shaped to trigger backtracking in brace/bracket patterns. */
+		const HOSTILE = [
+			'{' + ' '.repeat(50000),
+			'[{' + ' '.repeat(50000),
+			'{' + ' '.repeat(25000) + '}' + ' '.repeat(25000),
+			'['.repeat(25000),
+			' '.repeat(50000),
+			'-'.repeat(50000),
+			'9'.repeat(50000) + 'x',
+		];
 
-		it('rejects plain text', () => {
-			expectMatches(reBook.jsonObjArrRe, [], ['plain', 'a:1']);
-		});
+		for (const [name, pattern] of Object.entries(reBook)) {
+			it(`${name} resists hostile input`, () => {
+				// Act
+				const started = process.hrtime.bigint();
+				for (const payload of HOSTILE) pattern.test(payload);
+				const elapsed = Number(process.hrtime.bigint() - started) / 1e6;
 
-		it('does not match a bare stringified array', () => {
-			// Documents current behaviour: arrRe matches '[1,2]' but this one
-			// does not, so '[1,2]' is selectable as both `str` and `arr` at
-			// rigor 3. See the overlap test in filters/filterByType.test.js.
-			expectMatches(reBook.jsonObjArrRe, [], ['[1,2]']);
+				// Assert: the removed pattern needed ~115s for a single 8k input,
+				// so anything linear clears this by orders of magnitude.
+				assert.ok(elapsed < 1000, `${name} took ${elapsed.toFixed(1)}ms`);
+			});
+		}
+
+		it('no longer exports jsonObjArrRe', () => {
+			assert.strictEqual(reBook.jsonObjArrRe, undefined);
 		});
 
 	});

@@ -2,7 +2,7 @@
  * @file Type-exclusion filter. Public entry point behind the `fbType` export.
  */
 
-import { filterEngineRouter, isWalkable, reBook } from '../shared/index.js';
+import { filterEngineRouter, isWalkable, isValidJSONObjectOrArray, reBook } from '../shared/index.js';
 
 /** @typedef {import('../typedefs.js').Container} Container */
 /** @typedef {import('../typedefs.js').TypeAlias} TypeAlias */
@@ -188,14 +188,20 @@ function filterByType(ele, input, options = {}) {
 		 * A string is also treated as the type it spells out, so `'123'`
 		 * matches `number`, `'true'` matches `boolean`, `'[1,2]'` matches
 		 * `array` and `'{a:1}'` matches `object`. Conversely `string` stops
-		 * matching strings that look like stringified JSON. The `empty*`
+		 * matching strings that parse as JSON objects or arrays. The `empty*`
 		 * aliases are only meaningful at this level.
+		 *
+		 * Note the asymmetry: `array` and `object` use the loose shape tests
+		 * in {@link module:shared/regexBook}, while the `string` exclusion
+		 * uses strict JSON parsing. A brace-wrapped string that is not valid
+		 * JSON, such as `'{a:1}'`, therefore matches both `object` and
+		 * `string`.
 		 *
 		 * @returns {true | undefined} `true` on a match, otherwise `undefined`.
 		 */
 		function rigorThree() {
 			
-			if (currentInput === 'string' && valueType === 'string' && !reBook.jsonObjArrRe.test(value)) {
+			if (currentInput === 'string' && valueType === 'string' && !isValidJSONObjectOrArray(value)) {
 				return true;
 			} 
 			
