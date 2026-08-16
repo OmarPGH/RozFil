@@ -9,6 +9,23 @@ import {
     processObjectFilter 
 } from '../shared/index.js';
 
+/**
+ * Applies filtering logic to an object.
+ *
+ * Validates the filtering options and input, optionally clones the object,
+ * and processes its properties according to the provided filter function.
+ *
+ * @param {Object} obj - The object to filter.
+ * @param {*} input - The type or value criteria used for filtering.
+ * @param {Object} options - Filtering configuration.
+ * @param {boolean} [options.inPlace] - Whether to modify the original object.
+ * @param {number} [options.depth=Infinity] - Maximum traversal depth.
+ * @param {Function} filterFun - Function used to determine whether properties should be filtered.
+ * @param {Array | undefined} allowed - Allowed input types for validation.
+ * @param {boolean} [iterate=true] - Whether to recursively process the object.
+ * @returns {Object} The filtered object.
+ * @throws {Error} If the object, options, or filtering input is invalid.
+ */
 function objectFilterEngine(obj, input, options, filterFun, allowed, iterate = true) {
     
     validateOptions(options.inPlace, options.depth);

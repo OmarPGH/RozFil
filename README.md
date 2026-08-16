@@ -132,7 +132,7 @@ Excludes items from `data` that match specific values.
 - **`data`** *(Array | Object)*: Target collection to filter.
 - **`values`** *(Array | any)*: Values to match and remove.
 - **`options`** *(Object)*: Configuration settings:
-  - `cs` *(boolean)*: Case sensitivity flag for string comparisons. Default: `false`.
+  - `cs` *(boolean)*: Case sensitivity flag for string comparisons. Default: `true`.
   - `depth` *(number)*: Traversal depth limit for nested structures. Default: `Infinity`.
   - `inPlace` *(boolean)*: Mutates the original object/array if `true`. Default: `false`.
 

@@ -1,5 +1,20 @@
 import { filterEngineRouter, isWalkable, reBook } from '../shared/index.js';
 
+/**
+ * Filters an array or object by excluding values matching specified data types.
+ *
+ * Supports three levels of type detection, from standard JavaScript
+ * typeof checks to strict native types and stringified values.
+ *
+ * @param {Array | Object} ele - The array or object to filter.
+ * @param {Array | string} input - The type or types to exclude.
+ * @param {Object} [options={}] - Filtering configuration.
+ * @param {number} [options.rigor=1] - Type detection precision level (1, 2, or 3).
+ * @param {number} [options.depth=Infinity] - Maximum traversal depth.
+ * @param {boolean} [options.inPlace=false] - Whether to modify the original data.
+ * @returns {Array | Object} The filtered collection.
+ * @throws {Error} If the rigor value is outside the supported range.
+ */
 function filterByType(ele, input, options = {}) {
 
 	const rigor = options.rigor || 1;
@@ -13,6 +28,15 @@ function filterByType(ele, input, options = {}) {
 		allowed = ['string', 'number', 'boolean', 'undefined', 'function', 'null', 'array', 'object', 'NaN', 'bigint', 'Infinity', 'symbol', 'true', 'false', 'emptyString', 'emptyStringWithSpaces', 'emptyStringOrWithSpaces', 'emptyObject', 'emptyArray', 'date'];
 	}
 
+	/**
+	 * Evaluates whether a value matches the requested type.
+	 *
+	 * @param {string | undefined} key - The object's property key, or undefined for array elements.
+	 * @param {any} value - The value being evaluated.
+	 * @param {string} currentInput - The normalized type being tested.
+	 * @returns {boolean | string} True when the value matches the type,
+	 * false when it does not, or a traversal instruction for nested data.
+	 */
 	function filterFun(key, value, currentInput){
 
 		const valueType = typeof value;

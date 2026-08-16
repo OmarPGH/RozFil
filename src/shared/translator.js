@@ -1,5 +1,11 @@
 import { invalid } from './invalid.js';
 
+/**
+ * Translates a type alias or type name into its canonical type name.
+ *
+ * @param {string} [input=invalid] - Type alias or type name to translate.
+ * @returns {string} The canonical type name, or the invalid marker if unsupported.
+ */
 function translator(input = invalid) {
 
 	input = input.toLowerCase().trim();
