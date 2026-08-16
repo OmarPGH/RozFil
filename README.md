@@ -211,7 +211,7 @@ node tests/objUtilsTest.js
 
 ## License
 
-This project is licensed under the **GNU Lesser General Public License v3.0 only (LGPL-3.0-only)**. See the LICENSE file for details.
+This project is licensed under the **Apache-2.0**. See the LICENSE file for details.
 
 ---
 
