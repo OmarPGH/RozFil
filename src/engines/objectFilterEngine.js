@@ -5,11 +5,10 @@ import {
     validateAndTranslateInput, 
     validateDataNotEmpty, 
     cloneData, 
-    deleteObjectKeysNonIterative, 
     processObjectFilter 
-} from '../shared/index.js';
+} from '../core/index.js';
 
-function objectFilterEngine(obj, input, options, filterFun, allowed, iterate = true) {
+function objectFilterEngine(obj, input, options, filterFun, allowed) {
     
     validateOptions(options.inPlace, options.depth);
 
@@ -25,10 +24,6 @@ function objectFilterEngine(obj, input, options, filterFun, allowed, iterate = t
     validateDataNotEmpty(objKeys.length, 'Object items');
 
     obj = cloneData(obj, options.inPlace, 'object', '[Symbol, Function, etc]');
-
-    if (!iterate) {
-        return deleteObjectKeysNonIterative(obj, sanitizedInput);
-    }
 
     return processObjectFilter(obj, sanitizedInput, options.depth, filterFun);
 }
