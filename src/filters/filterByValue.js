@@ -1,4 +1,4 @@
-import { filterEngineRouter, isWalkable } from '../shared/index.js';
+import { filterEngineRouter, isWalkable } from '../helpers/index.js';
 
 function filterByValue(ele, input, options = {}) {
 	const cs = options.cs || true;
@@ -9,16 +9,17 @@ function filterByValue(ele, input, options = {}) {
 		let isWalkableRes = isWalkable(value);
 		if (isWalkableRes) return isWalkableRes;
 
-		value = String(value);
-		currentInput = String(currentInput);
 		
-		if (cs === false) {
-
-			if (currentInput.toLowerCase() === value.toLowerCase()) return true;
-
-		} else if (cs === true) {
+		if (cs === true) {
 
 			if (currentInput === value) return true;
+
+		} else if (cs === false) {
+
+			value = String(value);
+			currentInput = String(currentInput);
+			
+			if (currentInput.toLowerCase() === value.toLowerCase()) return true;
 
 		}
 
