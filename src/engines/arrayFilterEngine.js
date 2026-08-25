@@ -6,7 +6,7 @@ import {
     validateDataNotEmpty, 
     cloneData, 
     processArrayFilter 
-} from '../shared/index.js';
+} from '../core/index.js';
 
 function arrayFilterEngine(arr, input, options, filterFun, allowed) {
     

@@ -1,4 +1,4 @@
-import { translator as translate, invalid } from '../shared/index.js';
+import { translator as translate, invalid } from '../helpers/index.js';
 
 function validateDataType(condition, type) {
     if (!condition) {
@@ -59,13 +59,6 @@ function cloneData(data, inPlace = false, type, nonCloneable) {
             \n help: you can set inPlace option to true,\n but this can edit your original data.
         `);
     }
-}
-
-function deleteObjectKeysNonIterative(obj, input) {
-    for (let i = 0; i < input.length; i++) {
-        delete obj[input[i]];
-    }
-    return obj;
 }
 
 function loopingOnObject(obj, currentInput, filterFun, depth, currentDepth = 1) {
@@ -155,7 +148,6 @@ export {
     validateAndTranslateInput,
     validateDataNotEmpty,
     cloneData,
-    deleteObjectKeysNonIterative,
     processObjectFilter,
     processArrayFilter
 };
