@@ -1,4 +1,3 @@
-export let jsonObjArrRe = /^(\{\s*.*?\s*\}|\[\s*\{\s*.*?\s*\}\s*\])$/;
 export let arrRe = /^\[.*\]$/;
 export let objectRe = /^\{.*\}$/;
 export let numberRe = /^-?\d+(\.\d+)?$/;
