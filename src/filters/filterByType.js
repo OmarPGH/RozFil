@@ -1,4 +1,5 @@
 import { filterEngineRouter, isWalkable, reBook } from '../helpers/index.js';
+import { isJsonObjectOrArray } from '../helpers/jsonValidator.js';
 
 function filterByType(ele, input, options = {}) {
 
@@ -92,7 +93,7 @@ function filterByType(ele, input, options = {}) {
 
 		function rigorThree() {
 			
-			if (currentInput === 'string' && valueType === 'string' && !reBook.jsonObjArrRe.test(value)) {
+			if (currentInput === 'string' && valueType === 'string' && !isJsonObjectOrArray(value)) {
 				return true;
 			} 
 			
