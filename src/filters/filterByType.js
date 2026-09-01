@@ -2,7 +2,7 @@ import { filterEngineRouter, isWalkable, reBook } from '../helpers/index.js';
 
 function filterByType(ele, input, options = {}) {
 
-	const rigor = options.rigor || 1;
+	const rigor = options.rigor ?? 1;
 	if (rigor < 1 || rigor > 3) throw new Error("Rigor must be 1/2/3")
 	
 	let allowed;

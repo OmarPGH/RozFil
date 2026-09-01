@@ -17,7 +17,7 @@ function sanitizeInput(input) {
     } else if (typeof input === 'object' && input !== null) {
         throw new Error("Invalid input: input mustn't be an object");
     } else {
-        return input;
+        return [input];
     }
 }
 
@@ -116,26 +116,18 @@ function loopingOnArray(arr, currentInput, filterFun, depth, currentDepth = 1) {
 function processObjectFilter(obj, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
 
-    if (!Array.isArray(input)) {
-        loopingOnObject(arr, input, filterFun, depth);
-    } else {
-        for (let i = 0; i < inputLen; i++) {
-            loopingOnObject(obj, input[i], filterFun, depth);
-        }
+    for (let i = 0; i < inputLen; i++) {
+        loopingOnObject(obj, input[i], filterFun, depth);
     }
-
+    
     return obj;
 }
 
 function processArrayFilter(arr, input, depth = Infinity, filterFun) {
     const inputLen = input.length;
-
-    if (!Array.isArray(input)) {
-        loopingOnArray(arr, input, filterFun, depth);
-    } else {    
-        for (let i = 0; i < inputLen; i++) {
-            loopingOnArray(arr, input[i], filterFun, depth);
-        }
+        
+    for (let i = 0; i < inputLen; i++) {
+        loopingOnArray(arr, input[i], filterFun, depth);
     }
 
     return arr;
