@@ -85,7 +85,7 @@ const dataset = [
 
 // Exclude native numbers and stringified numbers (rigor level 3)
 const cleaned = fbType(dataset, ['num'], { rigor: 3 });
-// Result: ['hello', NaN, [1, 2], '[1, 2]', undefined, null]
+// Result: ['hello', NaN, [], '[1, 2]', undefined, null]
 
 // Strict exclusion of NaN and Arrays (rigor level 2)
 const strictClean = fbType(dataset, ['nan', 'arr'], { rigor: 2 });
@@ -132,7 +132,7 @@ Excludes items from `data` that match specific values.
 - **`data`** *(Array | Object)*: Target collection to filter.
 - **`values`** *(Array | any)*: Values to match and remove.
 - **`options`** *(Object)*: Configuration settings:
-  - `cs` *(boolean)*: Case sensitivity flag for string comparisons. Default: `false`.
+  - `cs` *(boolean)*: Case sensitivity flag for string comparisons. Default: `true`.
   - `depth` *(number)*: Traversal depth limit for nested structures. Default: `Infinity`.
   - `inPlace` *(boolean)*: Mutates the original object/array if `true`. Default: `false`.
 
