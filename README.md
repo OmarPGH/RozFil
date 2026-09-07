@@ -212,8 +212,8 @@ RozFil
 Run test execution scripts using Node.js:
 
 ```bash
-node tests/arrUtilsTest.js
-node tests/objUtilsTest.js
+node tests/arr.js
+node tests/obj.js
 ```
 
 ---
