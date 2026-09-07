@@ -1,6 +1,6 @@
 import { fbVal, fbType } from '../src/index.js';
 
-let myArray = ['', '   ', Infinity, 'Infinity', Symbol('id'), 9999999999999n, '9999999999999n', 1, '2', true, 'true', false, 'false', undefined, 'undefined', NaN, 'NaN', null, 'null', 'Mohamed', 'Sayed', Date(), ['Osama', undefined, 'Ahmed'], "[{gameName: 'GTA V'}]", "[{}]", [], function sayHello() {return 'Hello'}, {user: 'Tamer', id: 8}, "{name: 'Samya', type: 'girl'}", "{}", {}, {
+let myArray = ['', '   ', Infinity, 'Infinity', Symbol('id'), 9999999999999n, '9999999999999n', 1, '2', true, 'true', false, 'false', undefined, 'undefined', NaN, 'NaN', null, 'null', 'Mohamed', 'Sayed', Date(), ['Osama', undefined, 'Ahmed'], '[ {"gameName": "GTA V"} ]', "[{}]", [], function sayHello() {return 'Hello'}, {user: 'Tamer', id: 8}, '{ "name": "Samya", "type": "girl"}', "{}", {}, {
 	user1: { name: 'Omar', country: 'Egypt', city: 'Alex', skills:{one: ['JS', 'Node.js'], two: ['Rust']} },
 	user2: { name: 'Yuna', country: 'South Korea', city: 'Seoul', skills:{one: ['C#'], two: ['Python', 'Flask']} },
 	user3: { name: 'Harry', country: 'USA', city: 'Florida', skills:{one: ['C++'], two: ['PHP'], three: ['SQL']} },
@@ -38,7 +38,7 @@ let pfmcstart = performance.now();
 
 console.log('Start');
 
-console.log(fbType(myArray, ['true'], {inPlace: true, depth: 7, rigor: 3}))
+console.log(fbType(myArray, ['obj'], {inPlace: true, depth: 7, rigor: 3}))
 console.log(fbVal(myArray, ['Tamer'], {inPlace: true, depth: 7}))
 
 console.log('End');
