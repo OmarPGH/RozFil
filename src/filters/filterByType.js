@@ -1,4 +1,4 @@
-import { filterEngineRouter, isWalkable, reBook } from '../helpers/index.js';
+import { filterEngineRouter, isWalkable, jsonValidator, regexValidator } from '../helpers/index.js';
 
 function filterByType(ele, input, options = {}) {
 
@@ -92,11 +92,11 @@ function filterByType(ele, input, options = {}) {
 
 		function rigorThree() {
 			
-			if (currentInput === 'string' && valueType === 'string' && !reBook.jsonObjArrRe.test(value)) {
+			if (currentInput === 'string' && valueType === 'string' && !jsonValidator.isJsonObjArr(value)) {
 				return true;
 			} 
 			
-			if (currentInput === 'number' && (valueType === 'number' && !Number.isNaN(value) && value !== Infinity || reBook.numberRe.test(valueTrim))) {
+			if (currentInput === 'number' && (valueType === 'number' && !Number.isNaN(value) && value !== Infinity || jsonValidator.isJsonNum(valueTrim))) {
 				return true;
 			} 
 
@@ -116,11 +116,11 @@ function filterByType(ele, input, options = {}) {
 				return true;
 			} 
 
-			if (currentInput === 'array' && (Array.isArray(value) || reBook.arrRe.test(valueTrim))) {
+			if (currentInput === 'array' && (Array.isArray(value) || jsonValidator.isJsonArr(valueTrim))) {
 				return true;
 			} 
 
-			if (currentInput === 'object' && (valueType === 'object' && value !== null && !Array.isArray(value) || reBook.objectRe.test(valueTrim))) {
+			if (currentInput === 'object' && (valueType === 'object' && value !== null && !Array.isArray(value) || jsonValidator.isJsonObj(valueTrim))) {
 				return true;
 			}
 
@@ -128,7 +128,7 @@ function filterByType(ele, input, options = {}) {
 				return true;
 			}
 
-			if (currentInput === 'bigint' && (valueType === 'bigint' || reBook.bigintRe.test(valueTrim))) {
+			if (currentInput === 'bigint' && (valueType === 'bigint' || regexValidator.bigintRe.test(valueTrim))) {
 				return true;
 			}
 
@@ -152,7 +152,7 @@ function filterByType(ele, input, options = {}) {
 				return true;
 			}
 
-			if (currentInput === 'emptyStringWithSpaces' && valueType === 'string' && reBook.emptyStringWithSpacesRe.test(value)) {
+			if (currentInput === 'emptyStringWithSpaces' && valueType === 'string' && regexValidator.emptyStringWithSpacesRe.test(value)) {
 				return true;
 			}
 
