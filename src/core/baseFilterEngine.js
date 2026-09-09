@@ -32,6 +32,8 @@ function validateAndTranslateInput(input, allowed) {
         for (let i = 0; i < inputLen; i++) {
             translatedInput[i] = translate(`${translatedInput[i]}`);
         }
+        
+        translatedInput = [...new Set(translatedInput)];
 
         if (!translatedInput.every(ele => allowed.includes(ele)) || translatedInput.includes(invalid)) {
             throw new Error(`Type Error, only those allowed at the selected rigor : \n [ ${allowed.join(' / ')} ].\n hint: rigor = 1 by default`);
