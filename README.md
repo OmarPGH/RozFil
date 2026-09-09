@@ -212,8 +212,14 @@ RozFil
 Run test execution scripts using Node.js:
 
 ```bash
-node tests/arr.js
-node tests/obj.js
+# to run [ test/unit & test/integration ] test files.
+npm test
+
+# to run [ test/unit & test/integration ] test files but in watch mode.
+npm run test:watch
+
+# to run test/stress test files.
+npm run test:stress
 ```
 
 ---
